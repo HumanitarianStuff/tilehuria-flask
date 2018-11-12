@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% if tilesets %}
+    {% for tileset in tilesets %}
+    <div><p>{{ tileset }}</p></div>
+    {% endfor %}
+  {% endif %}
+      
+{% endblock %}

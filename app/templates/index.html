@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hi, {{ user.username }}!</h1>
-    {% for post in posts %}
-    <div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
-    {% endfor %}
+<form enctype="multipart/form-data" method=post action="/upload">
+  <div>
+    <h1>Please upload a polygon file</h1>
+    <p>It should be a GeoJSON file containing one or more polygons, in WGS84 Coordinate Reference System (this should be the default for most tools that produce such files).</p><p>With a bit of luck, after submitting your file you will find a corresponding MBTile file on the MBTiles page.</p>
+    <input id="polygon" name="polygon" type="file" />
+  </div>
+  <p></p>
+  <div>
+    <button type="submit">Submit</button>
+  </div>
+</form>
+
 {% endblock %}
