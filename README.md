@@ -1,13 +1,16 @@
 # Server for TileHuria
 
-## Installation
+Basic instructions for setting up a TileHuria server using Flask.
 
-- Create a cloud server (Ubuntu 18.04) and a sudo user. Log in.
-- Set up a bunch of python stuff like this: https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04
+A lot of this is fairly directly taken from the DigitalOcean community tutorial https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04.
+
+## Create and set up a server
+
+Create a cloud server (Ubuntu 18.04) and a sudo user. The usual setup from https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04. Log in.
+
+## Set up a bunch of python stuff
 
 ```
-sudo apt update
-sudo apt -y upgrade
 sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
 ```
 
@@ -17,14 +20,15 @@ git clone https://github.com/ivangayton/tilehuria-flask
 cd tilehuria/
 ```
 
-- Install the actual tilehuria code inside the app folder
+#### Install the actual tilehuria code inside the app folder
 
 ```
 cd app
 git clone https://github.com/humanitarianstuff/tilehuria
 cd ../
 ```
-- Set up a virtualenv and the basic infrastructure of Flask
+
+#### Set up a virtualenv and the basic infrastructure of Flask
 
 ```
 sudo apt install -y python3-venv
@@ -34,8 +38,8 @@ pip install wheel
 pip install uwsgi flask
 ```
 
-## install GDAL (a bit of a trial in a venv)
-Instructons for this rather unpleasant task can be found here: https://stackoverflow.com/questions/32066828/install-gdal-in-virtualenvwrapper-environment
+## install GDAL in your venv
+Discussion of this task, which seems way more complicated than it should be, can be found here (where I found a way to accomplish it): https://stackoverflow.com/questions/32066828/install-gdal-in-virtualenvwrapper-environment
 
 ```
 deactivate
@@ -56,15 +60,28 @@ pip install pillow
 ```
 
 ## Maybe it's useful to install dotenv?
+
+I dunno. At some point I'll try without doing this, but haven't gotten around to it and no idea what will happen without it.
 ```
 pip install python-dotenv
 ```
 
 ## Test it using the Flask dev server
-```flask run --host=0.0.0.0```
+
+If you want to confirm that things are working thus far, you can run the Flask development server and connect to it from your browser at tilehuria.org:5000 (or whatever your actual URL is). To run the server type:
+```
+flask run --host=0.0.0.0
+```
+and control-C to stop it.
 
 ## Test it using the uWSGI server
+
+You can also try it using the uWSGI server running from the command line. This assumes that the various bits of setup are correctly configured; the Github may have some hard-coded stuff in the Flask-related files specific to the tilehuria.org URL.
+
+```
 uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
+```
+Again, try connecting to it from your browser, and when done testing control-C to stop it. 
 
 ## Create a service and start it up
 bung the following into ```/etc/systemd/system/tilehuriaflask.service```
@@ -94,9 +111,11 @@ sudo systemctl enable tilehuriaflask.service
 
 If you want to test that this worked, enter ```sudo systemctl status tilehuriaflask.service```
 
-## Install nginx
+## Install Nginx
 
-```sudo apt install nginx```
+```
+sudo apt install nginx
+```
 
 ## Configure Nginx to serve the app
 
@@ -122,3 +141,4 @@ and symlink it to the sites-enabled by typing```sudo ln -s /etc/nginx/sites-avai
 sudo add-apt-repository ppa:certbot/certbot
 sudo apt install python-certbot-nginx
 sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
+```
