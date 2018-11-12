@@ -63,9 +63,10 @@ pip install python-dotenv
 ## Test it using the Flask dev server
 ```flask run --host=0.0.0.0```
 
+## Test it using the uWSGI server
+uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
 
-
-## Create a service
+## Create a service and start it up
 bung the following into ```/etc/systemd/system/tilehuriaflask.service```
 
 ```
@@ -77,7 +78,7 @@ After=network.target
 User=tilehuria
 Group=www-data
 WorkingDirectory=/home/tilehuria/tilehuria-flask
-Environment="PATH=/home/tilehuria/tilehuria-flask/"
+Environment="PATH=/home/tilehuria/tilehuria-flask/venv/bin"
 ExecStart=/home/tilehuria/tilehuria-flask/venv/bin/uwsgi --ini tilehuriaflask.ini
 
 [Install]
@@ -85,6 +86,39 @@ WantedBy=multi-user.target
 
 ```
 
+Now start and enable the service by:
+```
+sudo systemctl start tilehuriaflask.service
+sudo systemctl enable tilehuriaflask.service
+```
+
+If you want to test that this worked, enter ```sudo systemctl status tilehuriaflask.service```
+
 ## Install nginx
 
 ```sudo apt install nginx```
+
+## Configure Nginx to serve the app
+
+Enter the following into ```/etc/nginx/sites-available/tilehuriaflask```:
+
+
+```
+server {
+    listen 80;
+    server_name tilehuria.org www.tilehuria.org;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/tilehuria/tilehuria-flask/tilehuriaflask.sock;
+    }
+}
+```
+
+and symlink it to the sites-enabled by typing```sudo ln -s /etc/nginx/sites-available/tilehuriaflask /etc/nginx/sites-enabled```
+
+# Secure the whole damned thing with LetsEncrypt
+```
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt install python-certbot-nginx
+sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
