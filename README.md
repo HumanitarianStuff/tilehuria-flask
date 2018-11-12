@@ -59,5 +59,26 @@ That'll probably give you an error, so you look at the error output and add the 
 pip install pillow
 ```
 
-## 
+## Create a service
+bung the following into ```/etc/systemd/system/tilehuriaflask.service```
 
+```
+[Unit]
+Description=uWSGI instance to serve tilehuriaflask
+After=network.target
+
+[Service]
+User=tilehuria
+Group=www-data
+WorkingDirectory=/home/tilehuria/tilehuria-flask
+Environment="PATH=/home/tilehuria/tilehuria-flask/venv/bin"
+ExecStart=/home/tilehuria/tilehuria-flask/venv/bin/uwsgi --ini tilehuriaflask.ini
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+## Install nginx
+
+```sudo apt install nginx```
