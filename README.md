@@ -32,8 +32,6 @@ python3 -m venv venv
 source venv/bin/activate
 pip install wheel
 pip install uwsgi flask
-
-
 ```
 
 ## install GDAL (a bit of a trial in a venv)
@@ -56,6 +54,16 @@ That'll probably give you an error, so you look at the error output and add the 
 ```
 pip install pillow
 ```
+
+## Maybe it's useful to install dotenv?
+```
+pip install python-dotenv
+```
+
+## Test it using the Flask dev server
+```flask run --host=0.0.0.0```
+
+
 
 ## Create a service
 bung the following into ```/etc/systemd/system/tilehuriaflask.service```
