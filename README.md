@@ -4,6 +4,11 @@
 
 Create a cloud server (Ubuntu 18.04) and a sudo user. Log in.
 
+```
+git clone https://github.com/ivangayton/tilehuria-flask
+```
+
+
 
 
 install GDAL
