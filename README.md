@@ -2,7 +2,9 @@
 
 ## Installation
 
-Some stuff
+Create a cloud server (Ubuntu 18.04) and a sudo user. Log in.
+
+
 
 install GDAL
 
