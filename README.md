@@ -24,10 +24,9 @@ cd app
 git clone https://github.com/humanitarianstuff/tilehuria
 cd ../
 ```
-- Install Pip, set up a virtualenv and the basic infrastructure of Flask
+- Set up a virtualenv and the basic infrastructure of Flask
 
 ```
-sudo apt install -y python3-pip
 sudo apt install -y python3-venv
 python3 -m venv venv
 source venv/bin/activate
@@ -42,7 +41,6 @@ Instructons for this rather unpleasant task can be found here: https://stackover
 
 ```
 deactivate
-sudo apt install gdal-bin
 sudo apt install libgdal-dev
 source venv/bin/activate
 gdalversion=$(gdal-config --version)
@@ -71,7 +69,7 @@ After=network.target
 User=tilehuria
 Group=www-data
 WorkingDirectory=/home/tilehuria/tilehuria-flask
-Environment="PATH=/home/tilehuria/tilehuria-flask/venv/bin"
+Environment="PATH=/home/tilehuria/tilehuria-flask/"
 ExecStart=/home/tilehuria/tilehuria-flask/venv/bin/uwsgi --ini tilehuriaflask.ini
 
 [Install]
