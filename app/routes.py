@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, send_file
 from werkzeug.utils import secure_filename
 import sys, os
 from app import app
@@ -35,9 +35,19 @@ def upload():
 def mbtiles():
     all_files = scandir('files')
     tilesets = []
+    basenames = []
     for filename in all_files:
-        (basename, extension) = os.path.splitext(filename)
+        (pathname, extension) = os.path.splitext(filename)
+        basename = os.path.basename(filename)
         if extension == '.mbtiles':
-            tilesets.append(filename)
+            tilesets.append([basename, filename])
+        
     return render_template('mbtiles.html', title='MBTiles for download',
-                           tilesets=tilesets)
+                           tilesets = tilesets)
+
+@app.route('/download_tileset/<path>')
+def download_tileset(path):
+    print('\nHere I am!!! I am the download_tileset function!!!\n')
+    return render_template('index.html', title=path)
+    #return send_file(path)
+

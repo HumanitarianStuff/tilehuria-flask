@@ -4,7 +4,7 @@
 
   {% if tilesets %}
     {% for tileset in tilesets %}
-    <div><a href="{{url_for('static', filename=short_name) }}">{{ tileset }}</a></div>
+    <div><a href="{{url_for('download_tileset', path=tileset[0]) }}">{{ tileset[0] }}</a></div>
     {% endfor %}
   {% endif %}
       
