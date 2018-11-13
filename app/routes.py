@@ -47,7 +47,6 @@ def mbtiles():
 
 @app.route('/download_tileset/<path>')
 def download_tileset(path):
-    print('\nHere I am!!! I am the download_tileset function!!!\n')
-    return render_template('index.html', title=path)
-    #return send_file(path)
-
+    basename = os.path.basename(path)
+    dirname = os.path.dirname(os.path.abspath(path))
+    return send_file(os.path.join(dirname, 'files', basename), as_attachment = True)
