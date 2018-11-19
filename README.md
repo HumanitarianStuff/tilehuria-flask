@@ -142,3 +142,12 @@ sudo add-apt-repository ppa:certbot/certbot
 sudo apt install python-certbot-nginx
 sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
 ```
+
+# Setting up background tasks
+
+Following https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xxii-background-jobs
+
+```
+pip install rq
+pip freeze > requirements.txt
+sudo apt install redis-server
