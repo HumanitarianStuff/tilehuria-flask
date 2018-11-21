@@ -1,9 +1,11 @@
 from flask import render_template, flash, redirect, url_for, request, send_file
 from werkzeug.utils import secure_filename
-from redis import Redis
-import rq
 import sys, os
 from app import app
+import threading
+
+from app.tilehuria.polygon2mbtiles import polygon2mbtiles
+
 
 
 def scandir(dir): 
@@ -13,6 +15,10 @@ def scandir(dir):
         for f in files:
             filelist.append(os.path.join(path, f))
     return filelist
+
+def task(**opts):
+    infile = opts['infile']
+    polygon2mbtiles(infile)
 
 @app.route('/')
 @app.route('/index')
@@ -28,9 +34,18 @@ def upload():
         file.save(pathname)
         opts = {}
         opts ['infile'] = pathname
-        job = app.task_queue.enqueue(
-            'app.tilehuria.tilehuria.polygon2mbtiles.polygon2mbtiles', opts)
+        print('\nHere are the options captured by the submit button:')
+        print(opts)
+        print('\n')
+
+        # Crude threading to launch Tilehuria instead of a proper task queue
+        threads = []
+        thread = threading.Thread(target = task, kwargs = opts)
+        thread.start()
         #polygon2mbtiles(opts)
+        
+        
+        
         return render_template('upload.html', uploaded_file=filename)
     else:
         return render_template('index.html', title='No file. Try again!')

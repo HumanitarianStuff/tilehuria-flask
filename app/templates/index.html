@@ -5,11 +5,39 @@
   <div>
     <h1>Please upload a polygon file</h1>
     <p>It should be a GeoJSON file containing one or more polygons, in WGS84 Coordinate Reference System (this should be the default for most tools that produce such files).</p><p>With a bit of luck, after submitting your file you will find a corresponding MBTile file on the MBTiles page.</p>
+  </div>
+
+  <hr>
+  <div>
     <input id="polygon" name="polygon" type="file" />
   </div>
-  <p></p>
+ 
+
   <div>
-    <button type="submit">Submit</button>
+    <p>Please select a tile server:
+      <select id="simple" name="simple">
+	<option>Digital Globe Standard</option>
+	<option>Digital Globe Premium</option>
+	<option>Bing</option>
+	<option>Google</option>
+      </select>
+    </p>
+  </div>
+
+  <div>
+    <p>Pick a minimum zoom level
+      <input type="number" name="minzoom" id="minzoom" min="8" max="22" step="1" value="16">
+    </p>
+  </div>
+
+  <div>
+    <p>Pick a maximum zoom level
+      <input type="number" name="maxzoom" id="maxzoom" min="8" max="22" step="1" value="20">
+    </p>
+  </div>
+  
+  <div>
+    <button type="submit" style="color:purple"><strong>Submit</strong></button>
   </div>
 </form>
 
