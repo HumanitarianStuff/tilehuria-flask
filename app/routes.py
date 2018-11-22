@@ -6,8 +6,6 @@ import threading
 
 from app.tilehuria.polygon2mbtiles import polygon2mbtiles
 
-
-
 def scandir(dir): 
     """Walk recursively through a directory and return a list of all files in it"""
     filelist = []
@@ -16,9 +14,18 @@ def scandir(dir):
             filelist.append(os.path.join(path, f))
     return filelist
 
+def cleanopts(optsin):
+    """Takes a multidict from a a flask form and returns cleaned dict of options"""
+    opts = {}
+    d = optsin
+    for key in d:
+        opts[key] = optsin[key].lower().replace(' ', '_')
+    return opts
+    
 def task(**opts):
+    """Launches a thread to create an MBTile set in a background process"""
     infile = opts['infile']
-    polygon2mbtiles(infile)
+    polygon2mbtiles(infile, opts)
 
 @app.route('/')
 @app.route('/index')
@@ -28,13 +35,14 @@ def index():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
-        file = request.files['polygon']
-        filename = secure_filename(file.filename)
+        infile = request.files['polygon']
+        choices = request.form
+        opts = cleanopts(choices)
+        filename = secure_filename(infile.filename)
         pathname = (os.path.join('files', filename))
-        file.save(pathname)
-        opts = {}
-        opts ['infile'] = pathname
-        print('\nHere are the options captured by the submit button:')
+        infile.save(pathname)
+        opts['infile'] = pathname
+        print('\nOptions captured by the submission:')
         print(opts)
         print('\n')
 
@@ -42,9 +50,6 @@ def upload():
         threads = []
         thread = threading.Thread(target = task, kwargs = opts)
         thread.start()
-        #polygon2mbtiles(opts)
-        
-        
         
         return render_template('upload.html', uploaded_file=filename)
     else:
