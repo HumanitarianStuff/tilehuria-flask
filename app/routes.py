@@ -4,7 +4,7 @@ import sys, os
 from app import app
 import threading
 
-from app.tilehuria.polygon2mbtiles import polygon2mbtiles
+from app.tilehuria.tilehuria.polygon2mbtiles import polygon2mbtiles
 
 def scandir(dir): 
     """Walk recursively through a directory and return a list of all files in it"""
