@@ -14,17 +14,20 @@ Create a cloud server (Ubuntu 18.04) and a sudo user. The usual setup from https
 sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
 ```
 
-## Install the Tilehuria-Flask folder
+## Install the Tilehuria-Flask folder and switch to the working branch
+
 ```
 git clone https://github.com/HumanitarianStuff/tilehuria-flask
 cd tilehuria/
+git checkout dev
 ```
 
-#### Install the actual tilehuria code inside the app folder
+#### Install the tilehuria code inside the app folder and switch to the working branch
 
 ```
 cd app
 git clone https://github.com/HumanitarianStuff/tilehuria
+git checkout forflask
 cd ../
 ```
 
