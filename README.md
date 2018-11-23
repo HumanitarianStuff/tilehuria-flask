@@ -16,7 +16,7 @@ sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-de
 
 ## Install the Tilehuria-Flask folder
 ```
-git clone https://github.com/ivangayton/tilehuria-flask
+git clone https://github.com/HumanitarianStuff/tilehuria-flask
 cd tilehuria/
 ```
 
@@ -24,7 +24,7 @@ cd tilehuria/
 
 ```
 cd app
-git clone https://github.com/humanitarianstuff/tilehuria
+git clone https://github.com/HumanitarianStuff/tilehuria
 cd ../
 ```
 
@@ -77,6 +77,8 @@ and control-C to stop it.
 ## Test it using the uWSGI server
 
 You can also try it using the uWSGI server running from the command line. This assumes that the various bits of setup are correctly configured; the Github may have some hard-coded stuff in the Flask-related files specific to the tilehuria.org URL.
+
+The uWSGI server is really useful because there isn't any logging, error checking, or anything working yet. When running as a service, there's no obvious way to troubleshoot. On the uWSGI server, you'll see command line output including error message.
 
 ```
 uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
@@ -143,11 +145,3 @@ sudo apt install python-certbot-nginx
 sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
 ```
 
-# Setting up background tasks
-
-Following https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xxii-background-jobs
-
-```
-pip install rq
-pip freeze > requirements.txt
-sudo apt install redis-server
