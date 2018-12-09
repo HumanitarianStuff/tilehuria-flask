@@ -59,12 +59,12 @@ def upload():
 def mbtiles():
     all_files = scandir('files')
     tilesets = []
-    basenames = []
     for filename in all_files:
         (pathname, extension) = os.path.splitext(filename)
         basename = os.path.basename(filename)
-        if extension == '.mbtiles':
-            tilesets.append([basename, filename])
+        if extension.lower() == '.mbtiles':
+            tilesets.append((basename, filename))
+            
         
     return render_template('mbtiles.html', title='MBTiles for download',
                            tilesets = tilesets)

@@ -2,10 +2,34 @@
 
 {% block content %}
 
+<style>
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  padding: 10px;
+}
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(180, 200, 180, 0.1);
+  padding: 5px;
+
+  text-align: left;
+}
+</style>
+
   {% if tilesets %}
-    {% for tileset in tilesets %}
-    <div><a href="{{url_for('download_tileset', path=tileset[0]) }}">{{ tileset[0] }}</a></div>
+    <div class="grid-container">
+      <div class="grid-item"><b>MBTiles</b></div>
+      <div class="grid-item"><b>AOI polygon</b></div>
+      <div class="grid-item"><b>Status</b></div>
+      <div class="grid-item"><b>Delete?</b></div>
+      {% for tileset in tilesets %}
+      <div class="grid-item"><a href="{{url_for('download_tileset', path=tileset[0]) }}">{{ tileset[0] }}</a></div>
+      <div class="grid-item"><a href="{{url_for('download_tileset', path=tileset[2]) }}">{{ tileset[2] }}</a></div>
+      <div class="grid-item">view</div>
+      <div class="grid-item"><button type="submit" style="color:purple"><strong>Delete</strong></button></div>
     {% endfor %}
+    </div>
   {% endif %}
       
 {% endblock %}
