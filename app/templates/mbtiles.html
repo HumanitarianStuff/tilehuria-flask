@@ -19,14 +19,14 @@
 
   {% if tilesets %}
     <div class="grid-container">
-      <div class="grid-item"><b>MBTiles</b></div>
-      <div class="grid-item"><b>AOI polygon</b></div>
+      <div class="grid-item"><b>AOI Polygon</b></div>
+      <div class="grid-item"><b>Tileset(s)</b></div>
       <div class="grid-item"><b>Status</b></div>
       <div class="grid-item"><b>Delete?</b></div>
-      {% for tileset in tilesets %}
-      <div class="grid-item"><a href="{{url_for('download_tileset', path=tileset[0]) }}">{{ tileset[0] }}</a></div>
-      <div class="grid-item"><a href="{{url_for('download_tileset', path=tileset[2]) }}">{{ tileset[2] }}</a></div>
-      <div class="grid-item">view</div>
+      {% for aoi in aois %}
+      <div class="grid-item"><a href="{{url_for('download_tileset', path=aoi[0]) }}">{{ aoi[0] }}</a></div>
+      <div class="grid-item"><a href="{{url_for('download_tileset', path=aoi[0]) }}">{{ aoi[2] }}</a></div>
+      <div class="grid-item">error/1 tileset/in progress</div>
       <div class="grid-item"><button type="submit" style="color:purple"><strong>Delete</strong></button></div>
     {% endfor %}
     </div>

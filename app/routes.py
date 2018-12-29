@@ -59,15 +59,20 @@ def upload():
 def mbtiles():
     all_files = scandir('files')
     tilesets = []
+    aois = []
     for filename in all_files:
         (pathname, extension) = os.path.splitext(filename)
         basename = os.path.basename(filename)
         if extension.lower() == '.mbtiles':
             tilesets.append((basename, filename))
+        if extension.lower() == '.geojson':
+            if pathname[-10 :] != 'perimeters':
+                aois.append((basename, filename))
             
         
     return render_template('mbtiles.html', title='MBTiles for download',
-                           tilesets = tilesets)
+                           tilesets = tilesets,
+                           aois = aois)
 
 @app.route('/download_tileset/<path>')
 def download_tileset(path):
