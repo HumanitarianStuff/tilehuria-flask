@@ -63,11 +63,13 @@ def mbtiles():
     for filename in all_files:
         (pathname, extension) = os.path.splitext(filename)
         basename = os.path.basename(filename)
+        stripped_name = os.path.splitext(basename)[0]
+        namelen = len(stripped_name)
         if extension.lower() == '.mbtiles':
-            tilesets.append((basename, filename))
+            tilesets.append((basename, filename, stripped_name, namelen))
         if extension.lower() == '.geojson':
             if pathname[-10 :] != 'perimeters':
-                aois.append((basename, filename))
+                aois.append((basename, filename, stripped_name, namelen))
             
         
     return render_template('mbtiles.html', title='MBTiles for download',

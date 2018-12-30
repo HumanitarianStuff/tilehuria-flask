@@ -2,33 +2,39 @@
 
 {% block content %}
 
-<style>
-.grid-container {
-  display: grid;
-  grid-template-columns: auto auto auto auto;
-  padding: 10px;
-}
-.grid-item {
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(180, 200, 180, 0.1);
-  padding: 5px;
-
-  text-align: left;
-}
-</style>
-
-  {% if tilesets %}
+  <style>
+  .grid-container {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    padding: 10px;
+  }
+  .grid-item {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(180, 200, 180, 0.1);
+    padding: 5px;
+  
+    text-align: left;
+  }
+  </style>
+  
+  {% if aois %}
     <div class="grid-container">
       <div class="grid-item"><b>AOI Polygon</b></div>
+      <div class="grid-item"><b>Status</b></div>      
       <div class="grid-item"><b>Tileset(s)</b></div>
-      <div class="grid-item"><b>Status</b></div>
       <div class="grid-item"><b>Delete?</b></div>
       {% for aoi in aois %}
-      <div class="grid-item"><a href="{{url_for('download_tileset', path=aoi[0]) }}">{{ aoi[0] }}</a></div>
-      <div class="grid-item"><a href="{{url_for('download_tileset', path=aoi[0]) }}">{{ aoi[2] }}</a></div>
-      <div class="grid-item">error/1 tileset/in progress</div>
-      <div class="grid-item"><button type="submit" style="color:purple"><strong>Delete</strong></button></div>
-    {% endfor %}
+        <div class="grid-item"><a href="{{url_for('download_tileset', path=aoi[0]) }}">{{ aoi[0] }}</a></div>
+        <div class="grid-item">Hard to say</div>
+        <div class="grid-item">
+        {% for tileset in tilesets %}
+	  {% if tileset[2][: aoi[3]] == aoi[2] %}
+            <a href="{{url_for('download_tileset', path=tileset[0]) }}">{{ tileset[0] }}</a><p></p>
+          {% endif%}
+        {% endfor %}
+        </div>
+        <div class="grid-item"><button type="submit" style="color:purple"><strong>Delete</strong></button></div>
+      {% endfor %}
     </div>
   {% endif %}
       
