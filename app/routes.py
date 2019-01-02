@@ -14,6 +14,16 @@ def scandir(dir):
             filelist.append(os.path.join(path, f))
     return filelist
 
+def scandirnorecurse(dir):
+    """Walk non-recursively through a directory and return a list of files in it"""
+    filelist = []
+    for path, dirs, files in os.walk(dir):
+        for f in files:
+            filelist.append(os.path.join(path, f))
+        break    # This restricts it to the top-level directory; remove to recurse
+    return filelist
+    
+
 def cleanopts(optsin):
     """Takes a multidict from a a flask form and returns cleaned dict of options"""
     opts = {}
@@ -57,27 +67,27 @@ def upload():
 
 @app.route('/mbtiles')
 def mbtiles():
-    all_files = scandir('files')
-    tilesets = []
+    all_files = scandirnorecurse('files')
     aois = []
     for filename in all_files:
         (pathname, extension) = os.path.splitext(filename)
         basename = os.path.basename(filename)
         stripped_name = os.path.splitext(basename)[0]
         namelen = len(stripped_name)
-        if extension.lower() == '.mbtiles':
-            tilesets.append((basename, filename, stripped_name, namelen))
         if extension.lower() == '.geojson':
             if pathname[-10 :] != 'perimeters':
-                aois.append((basename, filename, stripped_name, namelen))
-            
-        
-    return render_template('mbtiles.html', title='MBTiles for download',
-                           tilesets = tilesets,
-                           aois = aois)
+                tilesets = []
+                for filen in all_files:
+                    (pathn, exten) = os.path.splitext(filen)
+                    mbtilefilename = os.path.basename(pathn)[: namelen]
+                    if (exten.lower() == '.mbtiles'
+                        and mbtilefilename == stripped_name):
+                        tilesets.append(os.path.basename(filen))
+                aois.append([basename, tilesets])    
+    return render_template('mbtiles.html', title='MBTiles for download', aois = aois)
 
-@app.route('/download_tileset/<path>')
-def download_tileset(path):
+@app.route('/download_file/<path>')
+def download_file(path):
     basename = os.path.basename(path)
     dirname = os.path.dirname(os.path.abspath(path))
     return send_file(os.path.join(dirname, 'files', basename), as_attachment = True)

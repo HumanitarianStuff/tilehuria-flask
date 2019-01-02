@@ -24,14 +24,13 @@
       <div class="grid-item"><b>Tileset(s)</b></div>
       <div class="grid-item"><b>Delete?</b></div>
       {% for aoi in aois %}
-        <div class="grid-item"><a href="{{url_for('download_tileset', path=aoi[0]) }}">{{ aoi[0] }}</a></div>
+        <div class="grid-item"><a href="{{url_for('download_file', path=aoi[0]) }}">{{ aoi[0] }}</a></div>
         <div class="grid-item">Hard to say</div>
         <div class="grid-item">
-        {% for tileset in tilesets %}
-	  {% if tileset[2][: aoi[3]] == aoi[2] %}
-            <a href="{{url_for('download_tileset', path=tileset[0]) }}">{{ tileset[0] }}</a><p></p>
-          {% endif%}
-        {% endfor %}
+	  {% for tileset in aoi[1] %}
+            <a href="{{url_for('download_file', path=tileset) }}">{{ tileset }}</a>
+	    <br>
+	  {% endfor %}
         </div>
         <div class="grid-item"><button type="submit" style="color:purple"><strong>Delete</strong></button></div>
       {% endfor %}
