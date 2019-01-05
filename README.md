@@ -170,10 +170,17 @@ sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
 
 
 ## Nice to have
-- It would be cool to allow users to generate additional MBTiles using an already-uploaded AOI.
+- Clean up the main function in create_tile_list.
+  - This has a lot of spaghetti in it. In particular, there's a shitload of math right in the body of the main function which should be farmed out to separate functions (maybe even contained in a separate utils.py module. In any case, the following things should be handled separately rather than all mixed together:
+    - Loading the driver and polygons
+    - Figuring out the extents and kicking out tiles not in the AOI Polygon(s)
+    - Calculating the extents and URLs of each tile
+    - Writing the outputs (CSV and GIS file)
   - Currently to generate multiple MBTile sets from one AOI you just upload the same thing multiple times. This, of course, leaves open the possibility of different AOIs with the same name (prediction: many versions of test.geojson).
+  - Ideally check for an identically-named file (maybe even check if it's the same file byte-for-byte) and offer to either use the already-uploaded one with different settings or rename.
+  - In this case, we should re-think the naming scheme to account for more than just tileserver.
 - Logins for individual users who can save their preferences (mainly URLs).
-  - If TileHuria integrates with Tasking Manager, that may solve the loging problem by piggybacking on TM logins.
+  - If TileHuria integrates with Tasking Manager, that may solve the login problem by piggybacking on TM logins.
 - Implement an adaptive concurrent download strategy to account for varying internet speeds.
   - The current threaded downloading works fine on the cloud server (defaults to 50 threads downloading concurrently, which seems to be about right), but running locally in an area with slow internet often results in timed-out tiles.
   - Ping suggested http://docs.python-requests.org/en/master/
