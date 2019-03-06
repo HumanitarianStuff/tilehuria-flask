@@ -27,9 +27,24 @@ git checkout dev
 ```
 cd app
 git clone https://github.com/HumanitarianStuff/tilehuria
+cd tilehuria
 git checkout forflask
-cd ../
+cd ../../
 ```
+
+#### Add the URL_formats.txt file to the Tilehuria folder
+TileHuria downloads tiles from servers; many of these may be commercial and subject to terms of service which do not permit downloading for every type of endeavor. Please see the [TileHuria Appropriate Use policy](https://github.com/HumanitarianStuff/tilehuria#appropriate-use-dos-and-donts) for more details. The bottom line is: we can't provide you with a bunch of URLs that link directly to tile servers. You'll have to enter your own.
+
+A good source of tileserver URLs is [JOSM](https://josm.openstreetmap.de/). Install JOSM, go to the Imagery Preferences, and a number of tile URLs appropriate for humanitarian mapping use are visible.
+
+The URL_formats.txt file (which must be named exactly that, and should be placed in the app/tilehuria/tilehuria/ directory) is formatted as in the following examples:
+
+```
+myservername https://mytileserver.com/{zoom}/{x}/{y}.png?access_token=mytoken
+anotherservername http://{switch:a,b,c,d}.tiles.atmyserver.org/{zoom}/{x}/{y}
+```
+
+This is a flat text file with no formatting, headers, or anything. Note that on each line there is a name, a space, then a URL (the name will be used to populate the dropdown for each user's available tileservers). Each URL contains variables contained in {curly braces}; these are replaced for each individual tile with the appropriate values. TileHuria will work with almost any SlippyMap compliant tileserver, it's just a matter of getting the URL right.
 
 #### Set up a virtualenv and the basic infrastructure of Flask
 
@@ -41,20 +56,32 @@ pip install wheel
 pip install uwsgi flask
 ```
 
-## install GDAL in your venv
+#### install GDAL in your venv
 Discussion of this task, which seems way more complicated than it should be, can be found here (where I found a way to accomplish it): https://stackoverflow.com/questions/32066828/install-gdal-in-virtualenvwrapper-environment
 
+first the gdal library itself:
 ```
 deactivate
 sudo apt install libgdal-dev
-source venv/bin/activate
-gdalversion=$(gdal-config --version)
-pip install pygdal==$gdalvers
 ```
 
-That'll probably give you an error, so you look at the error output and add the latest version (i.e. ```pip install pygdal==2.2.3.3```
+Then the pygdal hooks:
+```
+source venv/bin/activate
+gdalversion=$(gdal-config --version)
+pip install pygdal==$gdalversion
+```
 
-#### TODO: Write a function that parses the error output and automatically adds the final version number digit to the above command
+That'll probably give you an error, so you look at the error output and add the latest version (i.e. ```pip install pygdal==2.2.3.3```). Or replace the previous block with the following (unfinished block):
+
+```
+source venv/bin/activate
+gdalversion=$(gdal-config --version)
+ERROR=((pip install pygdal==$gdalversion) 2>&1)
+echo $ERROR
+# now find the largest matching number in the string contained in the ERROR variable. Stick it in variable newgdalversion and use it in a repeat command
+pip install pygdal==$newgdalversion
+```
 
 ## Install the imaging library
 
@@ -152,26 +179,22 @@ sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
 
 ## Critical (in rough order of importance)
 
-  - Ideally each user would have their own URL list saved. This would require implementing users, logins, etc&mdash;this is firmly in nice-to-have territory&mdash;the immediate imperative is simply to implement URL pasting.
+- Ideally each user would have their own URL list saved. This would require implementing users, logins, etc.
+  - Use the [Flask login library](https://flask-login.readthedocs.io/en/latest/)
+  - Provide a page for users to enter their custom URLs, which will be stored in their very own URL_formats.txt files (or database tables).
+  - Provide a single login per humanitarian org that needs Tilehuria and has agreed to abide the the various tile providers' terms of service. 
 - TileHuria-Flask doesn't provide users any insight into errors with their AOI files (or any other errors for that matter). There's a stubbed-in Status column in the MBTiles screen, but it doesn't currently say anything.
-  - Current idea is to save some kind of error log file for each upload and link to that in the Error column.
+  - Current idea is to save an error log file for each upload and link to that in the Error column.
+  - This should be implemented using the [python Logging facility](https://docs.python.org/3/library/logging.html), which in any case [flask uses](http://flask.pocoo.org/docs/1.0/logging/) by default.
 - The Delete button should probably actually do something
 - There should be an error and/or warning when someone attempts to create too large an MBTile.
   - Either fetch the area of the AOI using GDAL and calculate the number of tiles given the requested zoom levels, or
   - Just run the create_csv script and count the tiles. This will still be problematic if someone attempts to generate a CSV with a high zoom level for a whole country&mdash;the script will stall or maybe even run out of memory&mdash;but in most circumstances it'll be simpler and more accurate (for one thing, it'll give a precise estimate of the number of tiles that will be generated).
 
 ## Nice to have
-- Clean up the main function in create_tile_list.
-  - This has a lot of spaghetti in it. In particular, there's a shitload of math right in the body of the main function which should be farmed out to separate functions (maybe even contained in a separate utils.py module. In any case, the following things should be handled separately rather than all mixed together:
-    - Loading the driver and polygons
-    - Figuring out the extents and kicking out tiles not in the AOI Polygon(s)
-    - Calculating the extents and URLs of each tile
-    - Writing the outputs (CSV and GIS file)
-  - Currently to generate multiple MBTile sets from one AOI you just upload the same thing multiple times. This, of course, leaves open the possibility of different AOIs with the same name (prediction: many versions of test.geojson).
+- Currently to generate multiple MBTile sets from one AOI you just upload the same thing multiple times. This, of course, leaves open the possibility of different AOIs with the same name (prediction: many versions of test.geojson).
   - Ideally check for an identically-named file (maybe even check if it's the same file byte-for-byte) and offer to either use the already-uploaded one with different settings or rename.
   - In this case, we should re-think the naming scheme to account for more than just tileserver.
-- Logins for individual users who can save their preferences (mainly URLs).
-  - If TileHuria integrates with Tasking Manager, that may solve the login problem by piggybacking on TM logins.
 - Implement an adaptive concurrent download strategy to account for varying internet speeds.
   - The current threaded downloading works fine on the cloud server (defaults to 50 threads downloading concurrently, which seems to be about right), but running locally in an area with slow internet often results in timed-out tiles.
   - Ping suggested http://docs.python-requests.org/en/master/

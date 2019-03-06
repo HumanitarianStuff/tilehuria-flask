@@ -49,6 +49,8 @@ def upload():
         choices = request.form
         opts = cleanopts(choices)
         filename = secure_filename(infile.filename)
+        if not os.path.exists('files'):
+            outdir = os.makedirs('files')
         pathname = (os.path.join('files', filename))
         infile.save(pathname)
         opts['infile'] = pathname
