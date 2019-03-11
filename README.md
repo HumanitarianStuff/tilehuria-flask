@@ -14,22 +14,19 @@ Create a cloud server (Ubuntu 18.04) and a sudo user. The usual setup from https
 sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
 ```
 
-## Install the Tilehuria-Flask folder and switch to the working branch
+## Install the Tilehuria-Flask folder
 
 ```
 git clone https://github.com/HumanitarianStuff/tilehuria-flask
-cd tilehuria/
-git checkout dev
+cd tilehuria-flask/
 ```
 
-#### Install the tilehuria code inside the app folder and switch to the working branch
+#### Install the tilehuria code inside the app folder
 
 ```
 cd app
 git clone https://github.com/HumanitarianStuff/tilehuria
-cd tilehuria
-git checkout forflask
-cd ../../
+cd ../
 ```
 
 #### Add the URL_formats.txt file to the Tilehuria folder
@@ -64,6 +61,7 @@ first the gdal library itself:
 deactivate
 sudo apt install libgdal-dev
 ```
+#### TODO: this installs quite an old version of GDAL. Maybe use the ubuntugis PPA?
 
 Then the pygdal hooks:
 ```
