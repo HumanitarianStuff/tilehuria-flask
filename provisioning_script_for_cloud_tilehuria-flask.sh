@@ -43,8 +43,8 @@ echo setting up a bunch of Python dependencies
 sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
 
 echo collecting TileHuria
-git clone https://github.com/HumanitarianStuff/tilehuria-flask
-cd tilehuria-flask/
+#git clone https://github.com/HumanitarianStuff/tilehuria-flask
+#cd tilehuria-flask/
 
 cd app
 git clone https://github.com/HumanitarianStuff/tilehuria
