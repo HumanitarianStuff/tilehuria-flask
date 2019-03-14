@@ -18,7 +18,7 @@ echo installing nginx
 sudo apt install -y nginx
 
 echo adding the TileHuria site to nginx
-cat > /etc/nginx/sites-available/tilehuriaflask <<EOF
+sudo cat > /etc/nginx/sites-available/tilehuriaflask <<EOF
 server {
     listen 80;
     server_name $domain_name www.$domain_name;
@@ -73,7 +73,7 @@ echo installin the Pillow imaging library
 pip install pillow
 
 echo adding the TileHuria service to Systemd
-cat > /etc/systemd/system/tilehuriaflask.service <<EOF
+sudo cat > /etc/systemd/system/tilehuriaflask.service <<EOF
 [Unit]
 Description=uWSGI instance to serve tilehuriaflask
 After=network.target
