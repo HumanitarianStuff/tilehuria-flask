@@ -7,7 +7,7 @@
 echo please enter the domain name of your TileHuria server
 read domain_name
 echo
-echo Please enter an email address for certificate renewal information (certbot)
+echo Please enter an email address for certificate renewal information
 read email
 echo
 echo Updating and upgrading the OS
