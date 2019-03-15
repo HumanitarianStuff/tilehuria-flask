@@ -75,16 +75,20 @@ echo setting up uwsgi and flask
 pip install wheel
 pip install uwsgi flask
 
-echo setting up python hooks for GDAL. Currently this fails. FIX
+echo setting up python hooks for GDAL, pygdal.
+echo Doing so via a horrible hack using a Python script to extract the latest
+echo version of pygdal compatible with the specific GDAL installed. 
 gdalversion=$(gdal-config --version)
 ERROR=$((pip install pygdal==$gdalversion) 2>&1)
 echo $ERROR
-# TODO: now find the largest matching number in the string contained in the ERROR variable. Stick it in variable newgdalversion and use it in a repeat command
-# HORRIBLE WORKAROUND
-newgdalversion=$gdalversion.3
-pip install pygdal==$newgdalversion
+python3 parse_pip_error.py "$ERROR" "$gdalversion"
+pygdalversion=$(<gdalversion.txt)
+echo
+echo So we are installing pygdal version $pygdalversion
+pip install pygdal==$pygdalversion
+rm pygdalversion.txt
 
-echo installin the Pillow imaging library
+echo installing the Pillow imaging library
 pip install pillow
 
 echo adding the TileHuria service to Systemd
@@ -109,3 +113,8 @@ sudo mv tilehuriaflask.service /etc/systemd/system/
 echo starting and enabling the TileHuria service with Systemd
 sudo systemctl start tilehuriaflask.service
 sudo systemctl enable tilehuriaflask.service
+
+echo
+echo ##################################################
+echo NOW YOU NEED TO PROVIDE A URL_formats.txt FILE!!!!
+echo ##################################################
