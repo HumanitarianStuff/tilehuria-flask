@@ -15,10 +15,14 @@ sudo apt -y update
 sudo apt -y upgrade
 
 echo installing nginx
-sudo apt install -y nginx
+if ! type "nginx"; then
+    sudo apt install -y nginx
+else echo Nginx seems to be already installed
+fi
+
 
 echo adding the TileHuria site to nginx
-sudo cat > /etc/nginx/sites-available/tilehuriaflask <<EOF
+cat > tilehuriaflask <<EOF
 server {
     listen 80;
     server_name $domain_name www.$domain_name;
@@ -30,12 +34,21 @@ server {
 }
 EOF
 
-sudo ln -s /etc/nginx/sites-available/tilehuriaflask /etc/nginx/sites-enabled
+sudo mv tilehuriaflask /etc/nginx/sites-available/
+
+echo creating symlink to tilehuriaflask site in nginx sites-enabled
+if [ ! -f /etc/nginx/sites-enabled ]; then
+    sudo ln -s /etc/nginx/sites-available/tilehuriaflask /etc/nginx/sites-enabled
+else echo Looks like the symlink has already been created
+fi
 
 echo installing Certbot
-# TODO Add the -y flag to the following command (if that's how that works)
-sudo add-apt-repository ppa:certbot/certbot
-sudo apt install -y python-certbot-nginx
+if ! type "certbot"; then
+    sudo add-apt-repository -y ppa:certbot/certbot
+    sudo apt install -y python-certbot-nginx
+else echo Certbot seems to be already installed
+fi
+
 echo Procuring a certificate for the site from LetsEncrypt using Certbot
 sudo certbot --nginx -n --agree-tos --redirect -m $email -d $domain_name -d www.$domain_name
 
@@ -43,9 +56,6 @@ echo setting up a bunch of Python dependencies
 sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
 
 echo collecting TileHuria
-#git clone https://github.com/HumanitarianStuff/tilehuria-flask
-#cd tilehuria-flask/
-
 cd app
 git clone https://github.com/HumanitarianStuff/tilehuria
 cd ../
@@ -73,7 +83,7 @@ echo installin the Pillow imaging library
 pip install pillow
 
 echo adding the TileHuria service to Systemd
-sudo cat > /etc/systemd/system/tilehuriaflask.service <<EOF
+cat > tilehuriaflask.service <<EOF
 [Unit]
 Description=uWSGI instance to serve tilehuriaflask
 After=network.target
@@ -89,8 +99,8 @@ ExecStart=/home/tilehuria/tilehuria-flask/venv/bin/uwsgi --ini tilehuriaflask.in
 WantedBy=multi-user.target
 EOF
 
+sudo mv tilehuriaflask.service /etc/systemd/system/
+
 echo starting and enabling the TileHuria service with Systemd
 sudo systemctl start tilehuriaflask.service
 sudo systemctl enable tilehuriaflask.service
-
-
