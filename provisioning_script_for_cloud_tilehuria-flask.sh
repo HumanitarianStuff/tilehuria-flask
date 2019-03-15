@@ -37,7 +37,7 @@ EOF
 sudo mv tilehuriaflask /etc/nginx/sites-available/
 
 echo creating symlink to tilehuriaflask site in nginx sites-enabled
-if [ ! -f /etc/nginx/sites-enabled ]; then
+if [ ! -f /etc/nginx/sites-enabled/tilehuriaflask ]; then
     sudo ln -s /etc/nginx/sites-available/tilehuriaflask /etc/nginx/sites-enabled
 else echo Looks like the symlink has already been created
 fi
@@ -57,11 +57,14 @@ sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-de
 
 echo collecting TileHuria
 cd app
-git clone https://github.com/HumanitarianStuff/tilehuria
+if [ ! -d tilehuria ]; then  
+    git clone https://github.com/HumanitarianStuff/tilehuria
+else git pull
+fi
 cd ../
 
-echo setting up GDAL (still an old version; maybe gonna use a PPA for this)
-sudo apt install libgdal-dev
+echo setting up GDAL. still an old version. maybe gonna use a PPA for this
+sudo apt install -y libgdal-dev
 
 echo setting up a Python3 virtual environment
 sudo apt install -y python3-venv
@@ -72,11 +75,13 @@ echo setting up uwsgi and flask
 pip install wheel
 pip install uwsgi flask
 
-echo setting up python hooks for GDAL (currently this fails - to fix)
+echo setting up python hooks for GDAL. Currently this fails. FIX
 gdalversion=$(gdal-config --version)
-ERROR=((pip install pygdal==$gdalversion) 2>&1)
+ERROR=$((pip install pygdal==$gdalversion) 2>&1)
 echo $ERROR
 # TODO: now find the largest matching number in the string contained in the ERROR variable. Stick it in variable newgdalversion and use it in a repeat command
+# HORRIBLE WORKAROUND
+newgdalversion=$gdalversion.3
 pip install pygdal==$newgdalversion
 
 echo installin the Pillow imaging library
