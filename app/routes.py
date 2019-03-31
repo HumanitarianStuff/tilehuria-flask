@@ -5,6 +5,7 @@ from app import app
 import threading
 
 from app.tilehuria.tilehuria.polygon2mbtiles import polygon2mbtiles
+from app.tilehuria.tilehuria.utils import get_url_name_list
 
 def scandir(dir): 
     """Walk recursively through a directory and return a list of all files in it"""
@@ -20,7 +21,7 @@ def scandirnorecurse(dir):
     for path, dirs, files in os.walk(dir):
         for f in files:
             filelist.append(os.path.join(path, f))
-        break    # This restricts it to the top-level directory; remove to recurse
+        break    # Restricts it to the top-level directory; remove to recurse
     return filelist
     
 
@@ -40,7 +41,10 @@ def task(**opts):
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', title='Home')
+    """Home page where users are invited to upload an AOI and select optionse"""
+    # Get the available tileservers
+    sn = get_url_name_list()
+    return render_template('index.html', title='Home', servernames = sn)
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():

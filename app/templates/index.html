@@ -17,11 +17,9 @@
   <div>
     <p>Please select a tile server:
       <select id="tileserver" name="tileserver">
-	<option>Digital Globe Standard</option>
-	<option>Digital Globe Premium</option>
-	<option>Bing</option>
-	<option>Google</option>
-	<option>Esri_World_Imagery</option>
+	{% for servername in servernames %}
+  	  <option>{{servername}}</option>
+	{% endfor %}
       </select>
     </p>
   </div>
