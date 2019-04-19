@@ -26,7 +26,7 @@ def scandirnorecurse(dir):
     
 
 def cleanopts(optsin):
-    """Takes a multidict from a a flask form and returns cleaned dict of options"""
+    """Takes a multidict from a flask form, returns cleaned dict of options"""
     opts = {}
     d = optsin
     for key in d:
@@ -97,3 +97,15 @@ def download_file(path):
     basename = os.path.basename(path)
     dirname = os.path.dirname(os.path.abspath(path))
     return send_file(os.path.join(dirname, 'files', basename), as_attachment = True)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        choices = request.form
+        return render_template('profile.html', profile_info = choices)
+    else:
+        return render_template('login.html')
+
+@app.route('/profile')
+def profile():
+    return render_template('profile.html')
