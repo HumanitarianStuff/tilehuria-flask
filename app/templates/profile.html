@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<p>Welcome to your profile page.</p>
+
+{% if profile_info %}
+    <p>
+      Hi {{ profile_info['email'] }}
+    </p>
+     
+{% endif %}
+
+{% endblock %}
