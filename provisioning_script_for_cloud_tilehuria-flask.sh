@@ -10,6 +10,14 @@ echo
 echo Please enter an email address for certificate renewal information
 read email
 echo
+echo You can add the UbuntuGIS repositories to get the latest version of GDAL.
+echo WARNING: Do not do this on your local computer unless you know what you are doing.
+echo Changing the version of GDAL on your local machine can break stuff like QGIS.
+read -r -p "Add the UbuntuGIS repositories? [y/N] " response
+response=${response,,}    # tolower
+echo $response
+echo 
+echo
 echo Updating and upgrading the OS
 sudo apt -y update
 sudo apt -y upgrade
@@ -63,7 +71,16 @@ else git pull
 fi
 cd ../
 
-echo setting up GDAL. still an old version. maybe gonna use a PPA for this
+echo setting up GDAL. 
+
+if [[ "$response" =~ ^(yes|y)$ ]]; then
+    echo Adding UbuntuGIS repository for recent version of GDAL
+    sudo apt-get install python-software-properties
+    sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 314DF160
+    sudo apt update
+fi
+
 sudo apt install -y libgdal-dev
 
 echo setting up a Python3 virtual environment
