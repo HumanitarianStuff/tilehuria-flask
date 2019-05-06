@@ -75,8 +75,8 @@ echo setting up GDAL.
 
 if [[ "$response" =~ ^(yes|y)$ ]]; then
     echo Adding UbuntuGIS repository for recent version of GDAL
-    sudo apt-get install python-software-properties
-    sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+    sudo apt install -y python-software-properties
+    sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 314DF160
     sudo apt update
 fi
