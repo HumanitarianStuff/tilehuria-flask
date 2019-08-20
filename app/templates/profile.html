@@ -2,13 +2,15 @@
 
 {% block content %}
 
-<p>Welcome to your profile page.</p>
-
-{% if profile_info %}
+{% if profile_info['email'] and profile_info['password'] %}
     <p>
+      <p>You seem to be successfully logged in.</p>
       Hi {{ profile_info['email'] }}
+      {{ profile_info }}
     </p>
-     
+
+    {% else %}
+    <p>You are not logged in.<p>
 {% endif %}
 
 {% endblock %}
