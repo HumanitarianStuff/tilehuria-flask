@@ -2,10 +2,12 @@
 
 {% block content %}
 
-{% if profile_info['email'] and profile_info['password'] %}
+{% if profile_info %}
     <p>
       <p>You seem to be successfully logged in.</p>
       Hi {{ profile_info['email'] }}
+    </p>
+    <p>
       {{ profile_info }}
     </p>
 

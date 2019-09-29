@@ -1,4 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request, send_file
+# for login
+from flask import session, abort
 from werkzeug.utils import secure_filename
 import sys, os
 from app import app
@@ -6,6 +8,9 @@ import threading
 
 from app.tilehuria.tilehuria.polygon2mbtiles import polygon2mbtiles
 from app.tilehuria.tilehuria.utils import get_url_name_list
+
+from . import db
+
 
 def scandir(dir): 
     """Walk recursively through a directory and return a list of all files in it"""
@@ -101,11 +106,33 @@ def download_file(path):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        choices = request.form
-        return render_template('profile.html', profile_info = choices)
+        userdata = request.form
+        if userdata['email'] == 'ivangayton@gmail.com':
+            print('Login successful')
+            session['logged_in'] = True
+        else:
+            session['logged_in'] = False
+            print('Login failed for user {}'.format(userdata['email']))
+        return render_template('profile.html', profile_info = userdata)
     else:
         return render_template('login.html')
 
 @app.route('/profile')
 def profile():
-    return render_template('profile.html')
+    print(session)
+    if session.get('logged_in'):
+        return render_template('profile.html', profile_info = {'email': session.get('email')})
+    else:
+        flash('You are not logged in. Please log in or sign up.')
+        return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        userdata = request.form
+        session['logged_in'] = True
+        session['email'] = userdata['email']
+        return render_template('profile.html', profile_info = userdata)
+    else:
+        return render_template('signup.html')
+    
