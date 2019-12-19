@@ -14,7 +14,7 @@ Create a cloud server (Ubuntu 18.04) and a sudo user. The usual setup from https
 sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
 ```
 
-## Install the Tilehuria-Flask folder
+### Install the Tilehuria-Flask folder
 
 ```
 git clone https://github.com/HumanitarianStuff/tilehuria-flask
@@ -43,28 +43,21 @@ anotherservername http://{switch:a,b,c,d}.tiles.atmyserver.org/{zoom}/{x}/{y}
 
 This is a flat text file with no formatting, headers, or anything. Note that on each line there is a name, a space, then a URL (the name will be used to populate the dropdown for each user's available tileservers). Each URL contains variables contained in {curly braces}; these are replaced for each individual tile with the appropriate values. TileHuria will work with almost any SlippyMap compliant tileserver, it's just a matter of getting the URL right.
 
-#### Set up a virtualenv and the basic infrastructure of Flask
+### Set up a virtualenv and the basic infrastructure of Flask
 
-```
-sudo apt install -y python3-venv
-python3 -m venv venv
-source venv/bin/activate
-pip install wheel
-pip install uwsgi flask
-```
 
 #### install GDAL in your venv
 Discussion of this task, which seems way more complicated than it should be, can be found here (where I found a way to accomplish it): https://stackoverflow.com/questions/32066828/install-gdal-in-virtualenvwrapper-environment
 
 first the gdal library itself:
 ```
-deactivate
 sudo apt install libgdal-dev
 ```
 #### TODO: this installs quite an old version of GDAL. Maybe use the ubuntugis PPA?
 
 Then the pygdal hooks:
 ```
+sudo apt install -y python3-venv
 source venv/bin/activate
 gdalversion=$(gdal-config --version)
 pip install pygdal==$gdalversion
@@ -81,10 +74,22 @@ echo $ERROR
 pip install pygdal==$newgdalversion
 ```
 
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install wheel
+pip install uwsgi flask
+```
+
 ## Install the imaging library
 
 ```
 pip install pillow
+```
+
+### SQLAlchemy for when I get login and signup working
+```
+pip install Flask-SQLAlchemy
 ```
 
 ## Maybe it's useful to install dotenv?
