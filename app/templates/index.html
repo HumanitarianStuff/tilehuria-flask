@@ -1,54 +1,101 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form enctype="multipart/form-data" method=post action="/upload">
-  <div>
-    <h1>Please upload a polygon file</h1>
-    <p>It should be a GeoJSON file containing one or more polygons, in WGS84 Coordinate Reference System (this should be the default for most tools that produce such files).</p><p>With a bit of luck, after submitting your file you will find a corresponding MBTile file on the MBTiles page.</p>
-  </div>
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+</head>
+<div id="mapid" style="float: right; margin: 4px; width: 600px; height: 400px; position: relative; outline: none;" class="leaflet-container leaflet-fade-anim leaflet-grab leaflet-touch-drag" tabindex="0">
+  <script>
+var map = L.map('mapid', { drawControl: true }).setView([51.505, -0.09], 13);
 
-  <hr>
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+      maxZoom: 18,
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      id: 'mapbox/streets-v11'
+    }).addTo(map);
 
-  <div>
-    <input id="polygon" name="polygon" type="file" />
-  </div>
- 
+  </script>
+</div>
 
-  <div>
-    <p>Please select a tile server:
-      <select id="tileserver" name="tileserver">
-	{% for servername in servernames %}
-  	  <option>{{servername}}</option>
-	{% endfor %}
-      </select>
-    </p>
+<div class="mainblock">
+  <div class="leftpane">
+    <form enctype="multipart/form-data" method=post action="/upload">
+      <div>
+        <h1>Please upload a polygon file</h1>
+        <p>It should be a GeoJSON file containing one or more polygons, in WGS84 Coordinate Reference System (this should be the default for most tools that produce such files).</p><p>With a bit of luck, after submitting your file you will find a corresponding MBTile file on the MBTiles page.</p>
+      </div>
+      <hr>
+    
+      <div>
+        <input id="polygon" name="polygon" type="file" />
+      </div>
+     
+    
+      <div>
+        <p>Please select a tile server:
+          <select id="tileserver" name="tileserver">
+    	{% for servername in servernames %}
+      	  <option>{{servername}}</option>
+    	{% endfor %}
+          </select>
+        </p>
+      </div>
+    
+      <div>
+        <p>Pick a minimum zoom level
+          <input type="number" name="minzoom" id="minzoom" min="8" max="22" step="1" value="16">
+        </p>
+      </div>
+    
+      <div>
+        <p>Pick a maximum zoom level
+          <input type="number" name="maxzoom" id="maxzoom" min="8" max="22" step="1" value="20">
+        </p>
+      </div>
+      
+      <div>
+        <p>Please select a tile file format:
+          <select id="format" name="format">
+      	<option>JPEG</option>
+    	<option>PNG</option>
+          </select>
+          (JPEG gives smaller files, PNG has better color depth and allows transparency).
+        </p>
+      </div>
+    
+      <div>
+        <button type="submit" style="color:purple"><strong>Submit</strong></button>
+      </div>
+    </form>
   </div>
+  <div class="mappane">
+  </div>
+</div>
 
-  <div>
-    <p>Pick a minimum zoom level
-      <input type="number" name="minzoom" id="minzoom" min="8" max="22" step="1" value="16">
-    </p>
-  </div>
+<script>
+  var mymap = L.map('mappane').setView([51.505, -0.09], 13);
+  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+  maxZoom: 18,
+  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+  '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+  'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+  id: 'mapbox/streets-v11'
+  }).addTo(mymap);
+</script>
 
-  <div>
-    <p>Pick a maximum zoom level
-      <input type="number" name="maxzoom" id="maxzoom" min="8" max="22" step="1" value="20">
-    </p>
-  </div>
-  
-  <div>
-    <p>Please select a tile file format:
-      <select id="format" name="format">
-  	<option>JPEG</option>
-	<option>PNG</option>
-      </select>
-      (JPEG gives smaller files, PNG has better color depth and allows transparency).
-    </p>
-  </div>
+<hr>
 
-  <div>
-    <button type="submit" style="color:purple"><strong>Submit</strong></button>
-  </div>
-</form>
+<div class="footer">
+  <h1>Instructions</h1>
+  <p>Create a polygon GeoJSON file containing your Area of Interest (AOI). You can use QGIS or GeoJSON.io for this.</p>
+  <p></p>
+</div>
+
 
 {% endblock %}
