@@ -34,6 +34,7 @@
 .leftpane {
     float: left;
     width: 30%;
+    margin-left: 25px;
 }
 
 .mappane {
