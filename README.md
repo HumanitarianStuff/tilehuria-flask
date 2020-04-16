@@ -53,15 +53,15 @@ first the gdal library itself:
 sudo apt install libgdal-dev
 ```
 
+#### TODO: this installs quite an old version of GDAL. Maybe use the ubuntugis PPA?
+
+Now the virtual environment:
 ```
 python3 -m venv venv
 source venv/bin/activate
 pip install wheel
 pip install uwsgi flask
 ```
-
-
-#### TODO: this installs quite an old version of GDAL. Maybe use the ubuntugis PPA?
 
 Then the pygdal hooks:
 ```
