@@ -57,6 +57,7 @@ sudo apt install libgdal-dev
 
 Now the virtual environment:
 ```
+sudo apt install -y python3-venv
 python3 -m venv venv
 source venv/bin/activate
 pip install wheel
@@ -65,8 +66,6 @@ pip install uwsgi flask
 
 Then the pygdal hooks:
 ```
-sudo apt install -y python3-venv
-source venv/bin/activate
 gdalversion=$(gdal-config --version)
 pip install pygdal==$gdalversion
 ```
