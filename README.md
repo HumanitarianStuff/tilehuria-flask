@@ -45,14 +45,22 @@ This is a flat text file with no formatting, headers, or anything. Note that on 
 
 ### Set up a virtualenv and the basic infrastructure of Flask
 
-
-#### install GDAL in your venv
+#### install GDAL
 Discussion of this task, which seems way more complicated than it should be, can be found here (where I found a way to accomplish it): https://stackoverflow.com/questions/32066828/install-gdal-in-virtualenvwrapper-environment
-
 first the gdal library itself:
+
 ```
 sudo apt install libgdal-dev
 ```
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install wheel
+pip install uwsgi flask
+```
+
+
 #### TODO: this installs quite an old version of GDAL. Maybe use the ubuntugis PPA?
 
 Then the pygdal hooks:
@@ -72,13 +80,6 @@ ERROR=((pip install pygdal==$gdalversion) 2>&1)
 echo $ERROR
 # now find the largest matching number in the string contained in the ERROR variable. Stick it in variable newgdalversion and use it in a repeat command
 pip install pygdal==$newgdalversion
-```
-
-```
-python3 -m venv venv
-source venv/bin/activate
-pip install wheel
-pip install uwsgi flask
 ```
 
 ## Install the imaging library
