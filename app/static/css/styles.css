@@ -26,17 +26,34 @@
 }
 
 .mainblock:after {
-    content: "";
-    display: table;
-    clear: both;
+  content: "";
+  display: table;
+  clear: both;
 }
 
 .leftpane {
-    float: left;
-    width: 30%;
-    margin-left: 25px;
+  float: left;
+  width: 40%;
+  margin-left: 7%;
 }
 
-.footer {
-    width: 100%;
+.rightpane {
+  float: right;
+  width: 40%;
+  margin-right: 7%;
+  height: 100%;
 }
+.footer {
+  width: 100%;
+  margin-left: 7%;
+
+}
+.page-header {
+  margin-left: 7%;
+}
+#map {
+  height: 70%;
+}
+/*
+.GeoJSON_content { display: none; }
+.GeoJSON_content.active { display: block; }*/

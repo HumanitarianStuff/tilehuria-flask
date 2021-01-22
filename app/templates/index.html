@@ -7,15 +7,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
 </head>
 
-<div class="rightpane" style="float:right;width:60%;height: 100%;">
+<div class="page-header">
+  <h1>Please upload a polygon file or draw a rectangle</h1>
+</div>
+
+<div class="rightpane" >
+    <p>Use the square button on the top right corner of the map to draw a rectangle. You can edit or delete the rectangle by using the other top right buttons. Then you can continue to fill the form on the left</p>
   <div id="mapid" class="leaflet-container leaflet-fade-anim leaflet-grab leaflet-touch-drag" tabindex="0">
     <div id="map"></div>
-    <style type="text/css">
-    #map {
-      height: 40%;
-    }
-    </style>
-
   </div>
   <p id="coordinates"></p>
 </div>
@@ -24,51 +23,75 @@
 
 <div class="mainblock" style="">
   <div class="leftpane">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" value="GeJSON">
+      <label class="form-check-label" for="exampleRadios1">
+        Upload GeJSON file
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio"  value="map">
+      <label class="form-check-label" >
+        Draw a rectangle on a map
+      </label>
+    </div>
+    <br>
     <form enctype="multipart/form-data" method=post action="/upload">
-      <div>
-        <h1>Please upload a polygon file</h1>
-        <p>It should be a GeoJSON file containing one or more polygons, in WGS84 Coordinate Reference System (this should be the default for most tools that produce such files).</p><p>With a bit of luck, after submitting your file you will find a corresponding MBTile file on the MBTiles page.</p>
+      <div class="GeoJSON_content">
+        <div>
+          <p>It should be a GeoJSON file containing one or more polygons, in WGS84 Coordinate Reference System (this should be the default for most tools that produce such files).</p><p>With a bit of luck, after submitting your file you will find a corresponding MBTile file on the MBTiles page.</p>
+        </div>
+      
+        <div>
+          <input id="polygon" name="polygon" type="file" />
+        </div>
       </div>
       <hr>
-    
-      <div>
-        <input id="polygon" name="polygon" type="file" />
-      </div>
-     
-      <div>
-        <p>Please select a tile server:
-          <select id="tileserver" name="tileserver">
-    	{% for servername in servernames %}
-      	  <option>{{servername}}</option>
-    	{% endfor %}
-          </select>
-        </p>
-      </div>
-    
-      <div>
-        <p>Pick a minimum zoom level
-          <input type="number" name="minzoom" id="minzoom" min="8" max="22" step="1" value="16">
-        </p>
-      </div>
-    
-      <div>
-        <p>Pick a maximum zoom level
-          <input type="number" name="maxzoom" id="maxzoom" min="8" max="22" step="1" value="20">
-        </p>
-      </div>
+      <div class="card card-body bg-light">
+        <div>
+          <p>Please select a tile server:
+            <select class="form-control" id="tileserver" name="tileserver">
+      	{% for servername in servernames %}
+        	  <option>{{servername}}</option>
+      	{% endfor %}
+            </select>
+          </p>
+        </div>
+        <div class="row g-2 align-items-center">
+          <div class="col-sm-8">
+            <label>Pick a minimum zoom level</label> 
+          </div>
+          <div class="col-sm-4">
+            <input class="form-control" type="number" name="minzoom" id="minzoom" min="8" max="22" step="1" value="16">
+          </div>
+        </div>
+        <br>
       
-      <div>
-        <p>Please select a tile file format:
-          <select id="format" name="format">
-      	<option>JPEG</option>
-    	<option>PNG</option>
-          </select>
-          (JPEG gives smaller files, PNG has better color depth and allows transparency).
-        </p>
-      </div>
-    
-      <div>
-        <button type="submit" style="color:purple"><strong>Submit</strong></button>
+        <div class="row g-2 align-items-center">
+          <div class="col-sm-8">
+            <label>Pick a maximum zoom level</label> 
+          </div>
+          <div class="col-sm-4">
+            <input class="form-control" type="number" name="maxzoom" id="maxzoom" min="8" max="22" step="1" value="20">
+          </div>
+        </div>
+        <br>
+        <div class="row g-2 align-items-center">
+          <div class="col-sm-8">
+            <label>Please select a tile file format:</label>
+          </div>
+          <div class="col-sm-4">
+            <select class="form-control" id="format" name="format">
+        	     <option>JPEG</option>
+      	       <option>PNG</option>
+            </select>
+            </div>
+            <label class="col-sm-12">(JPEG gives smaller files, PNG has better color depth and allows transparency).</label>
+        </div>
+      
+        <div>
+          <button class="btn btn-outline-info" type="submit"><strong>Submit</strong></button>
+        </div>
       </div>
     </form>
   </div>
@@ -85,8 +108,9 @@
 </div>
 
 <script>
+
   // center of the map
-  var center = [-33.8650, 151.2094];
+  var center = [0.0, 151.2094];
   // Create the map
   var map = L.map('map').setView(center, 1);
   // Set up the OSM layer
