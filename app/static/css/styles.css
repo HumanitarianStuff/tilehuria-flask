@@ -54,6 +54,8 @@
 #map {
   height: 70%;
 }
-/*
-.GeoJSON_content { display: none; }
-.GeoJSON_content.active { display: block; }*/
+
+.rectangle-content { display: none; }
+.rectangle-content.checked { display: block; }
+.geojson-content { display: none; }
+.geojson-content.checked { display: block; }
