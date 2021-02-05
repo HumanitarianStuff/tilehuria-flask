@@ -14,9 +14,10 @@
 <br>
 <form enctype="multipart/form-data" method=post action="/upload">
   <div class="leftpane">
+    <!-- Selection for geojson or drawing -->
     <b>Do you want to select the boundaries of the tiles by GeoJSON or by drawing a rectangle?</b>
     <div class="form-check">
-      <input class="form-check-input geojson-radio" type="radio" value="GeJSON", name="boundaries">
+      <input class="form-check-input geojson-radio" type="radio" value="geojson", name="boundaries">
       <label class="form-check-label" for="exampleRadios1">
         Upload GeJSON file
       </label>
@@ -27,6 +28,8 @@
         Draw a rectangle on a map
       </label>
     </div>
+
+    <!-- geojson content -->
     <div class="geojson-content">
       <div>
         <br>
@@ -36,17 +39,27 @@
         <input id="polygon" name="polygon" type="file" />
       </div>
     </div>
+    <br>
+
+    <!-- map content -->
     <div class="rectangle-content checked" >
       <br>
         <p>Use the square button on the top right corner of the map to draw a rectangle. You can edit or delete the rectangle by using the other top right buttons. Then you can continue to fill the form on the right</p>
-      <div id="mapid" class="leaflet-container leaflet-fade-anim leaflet-grab leaflet-touch-drag" tabindex="0">
-        <div id="map"></div>
+      <div>
+        <label>Give name for the file</label>
+        <input type="text" name="file_name", placeholder="file_name" value="rectangle">
       </div>
-      <p id="coordinates"></p>
+      <div id="mapid" class="leaflet-container leaflet-fade-anim leaflet-grab leaflet-touch-drag" tabindex="0">
+        <div id="map">
+        </div>
+      </div>
+      <input type="text" name="map_input" id="coordinates"></input>
     </div>
   </div>
   <div class="mainblock" style="">
-    <div class="rightpane">    
+    <div class="rightpane">
+
+    <!-- opts selection     -->
       <div class="card card-body bg-light">
         <div>
           <p>Please select a tile server:
@@ -166,30 +179,55 @@ map.on('drag', function() {
   var drawControl = new L.Control.Draw(drawPluginOptions);
   map.addControl(drawControl);
 
+  fetch('/upload')
+    .then(function (text) {
+        console.log('The rectangle coordinates are: ');
+        console.log(rectangle_LatLngs)
+    });
+
+  update_latlongs = function(rectangle_LatLngs){
+    document.getElementById('coordinates').innerHTML = 'The coordinates of the rectangle: '+ rectangle_LatLngs
+    document.getElementById('coordinates').value = rectangle_LatLngs;
+    console.log(rectangle_LatLngs);
+
+    // fetch(`${window.origin}/index`, {
+    //   method: "POST",
+    //   body: JSON.stringify(rectangle_LatLngs)
+
+    // })
+
+    // fetch('/upload')
+    // .then(function (response) {
+    //     return response.text();
+    // }).then(function (text) {
+    //     console.log('GET response text:');
+    //     console.log(text); // Print the greeting as text
+    // });
+  }
+
   map.on('draw:created', function(e) {
     var type = e.layerType, 
     layer = e.layer;
     if (type === 'rectangle') {
       var rectangle_LatLngs = layer.getLatLngs()
-      document.getElementById('coordinates').innerHTML = 'The coordinates of the rectangle: '+ rectangle_LatLngs
+      update_latlongs(rectangle_LatLngs)
     }
     editableLayers.addLayer(layer);
   });
-
   map.on('draw:edited', function (e) {
     var layers = e.layers;
     layers.eachLayer(function (layer) {
     var rectangle_LatLngs = layer.getLatLngs()
-    document.getElementById('coordinates').innerHTML = 'The coordinates of the rectangle: '+ rectangle_LatLngs
+    update_latlongs(rectangle_LatLngs)
     });
   });
-
     map.on('draw:deleted', function (e) {
     var layers = e.layers;
     layers.eachLayer(function (layer) {
     var rectangle_LatLngs = ''
-    document.getElementById('coordinates').innerHTML = 'The coordinates of the rectangle: '+ rectangle_LatLngs
+    update_latlongs(rectangle_LatLngs)
     });
   });
+
 </script>
 {% endblock %}

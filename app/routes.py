@@ -6,7 +6,7 @@ import sys, os
 from app import app
 import threading
 
-from app.tilehuria.tilehuria.polygon2mbtiles import polygon2mbtiles
+from app.tilehuria.tilehuria.polygon2mbtiles import polygon2mbtiles, drawn_feature2mbtiles
 from app.tilehuria.tilehuria.utils import get_url_name_list
 
 from . import db
@@ -43,6 +43,11 @@ def task(**opts):
     infile = opts['infile']
     polygon2mbtiles(infile, opts)
 
+def task_drawn(**opts):
+    """Launches a thread to create an MBTile set in a background process"""
+    coordinates = opts['coordinates']
+    drawn_feature2mbtiles(coordinates, opts)
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -54,22 +59,40 @@ def index():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
-        infile = request.files['polygon']
-        choices = request.form
-        opts = cleanopts(choices)
-        filename = secure_filename(infile.filename)
         if not os.path.exists('files'):
             outdir = os.makedirs('files')
-        pathname = (os.path.join('files', filename))
-        infile.save(pathname)
-        opts['infile'] = pathname
-        print('\nOptions captured by the submission:')
-        print(opts)
-        print('\n')
+        threads = []
+        choices = request.form
+        opts = cleanopts(choices)
+        if opts['boundaries'] == 'map':
+            print(' it is a map')
+            # cooordinates = 
+            extension = '.txt'
+            filename = opts['file_name'] + extension
+            pathname = (os.path.join('files', filename))
+
+            coordinates = opts['map_input']
+            print(' These are your coordinates: {}, and opts: {}'.format(coordinates, opts))
+            opts['coordinates'] = coordinates
+            # infile.save(pathname)
+            # opts['infile'] = pathname
+
+            thread = threading.Thread(target = task_drawn, kwargs = opts)
+
+        else:
+            print('it is a geojson')
+            infile = request.files['polygon']
+            filename = secure_filename(infile.filename)
+            pathname = (os.path.join('files', filename))
+            infile.save(pathname)
+            opts['infile'] = pathname
+            thread = threading.Thread(target = task, kwargs = opts)
+
+
+
+        print('\nOptions captured by the submission: {}\n'.format(opts))
 
         # Crude threading to launch Tilehuria instead of a proper task queue
-        threads = []
-        thread = threading.Thread(target = task, kwargs = opts)
         thread.start()
         
         return render_template('upload.html', uploaded_file=filename)

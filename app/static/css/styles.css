@@ -59,3 +59,7 @@
 .rectangle-content.checked { display: block; }
 .geojson-content { display: none; }
 .geojson-content.checked { display: block; }
+
+#coordinates {
+  display: none;
+}
