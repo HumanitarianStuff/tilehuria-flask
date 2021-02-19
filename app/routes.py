@@ -65,22 +65,27 @@ def upload():
         choices = request.form
         opts = cleanopts(choices)
         if opts['boundaries'] == 'map':
-            print(' it is a map')
+            print('\nIt is a map')
             # cooordinates = 
-            extension = '.txt'
+            extension = '.geojson'
             filename = opts['file_name'] + extension
             pathname = (os.path.join('files', filename))
 
-            coordinates = opts['map_input']
-            print(' These are your coordinates: {}, and opts: {}'.format(coordinates, opts))
-            opts['coordinates'] = coordinates
+
+            # opts['coordinates'] = coordinates
+
+            # print('\nThese are your coordinates: {}, the first element óf coordinates: {}, and opts: {}'.format(coordinates, coordinates[1], opts))
+
+            
+
+
             # infile.save(pathname)
             # opts['infile'] = pathname
 
             thread = threading.Thread(target = task_drawn, kwargs = opts)
 
         else:
-            print('it is a geojson')
+            print('\nIt is a geojson')
             infile = request.files['polygon']
             filename = secure_filename(infile.filename)
             pathname = (os.path.join('files', filename))
