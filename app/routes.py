@@ -64,21 +64,17 @@ def upload():
         threads = []
         choices = request.form
         opts = cleanopts(choices)
+        # Check if the selection is the map or file
         if opts['boundaries'] == 'map':
             print('\nIt is a map')
-            # cooordinates = 
             extension = '.geojson'
             filename = opts['file_name'] + extension
             pathname = (os.path.join('files', filename))
 
-
-            # opts['coordinates'] = coordinates
-
-            # print('\nThese are your coordinates: {}, the first element óf coordinates: {}, and opts: {}'.format(coordinates, coordinates[1], opts))
-
-            
-
-
+            print('\nThese are your opts: {}'.format(opts))
+            # These are the same coordinates that get downloaded in JS
+            coordinates = opts['map_input']
+            print('\nThese are your coordinates: {}, and opts: {}'.format(coordinates, opts))
             # infile.save(pathname)
             # opts['infile'] = pathname
 

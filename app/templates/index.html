@@ -9,13 +9,13 @@
 </head>
 
 <div class="page-header">
-  <h1>Please upload a polygon file or draw a rectangle</h1>  
+  <h1>Please upload a polygon file or draw a polygon</h1>  
 </div>
 <br>
 <form enctype="multipart/form-data" method=post action="/upload">
   <div class="leftpane">
     <!-- Selection for geojson or drawing -->
-    <b>Do you want to select the boundaries of the tiles by GeoJSON or by drawing a rectangle?</b>
+    <b>Do you want to select the boundaries of the tiles by GeoJSON or by drawing a polygon?</b>
     <div class="form-check">
       <input class="form-check-input geojson-radio" type="radio" value="geojson", name="boundaries">
       <label class="form-check-label" for="exampleRadios1">
@@ -25,7 +25,7 @@
     <div class="form-check">
       <input class="form-check-input rectangle-input", checked="checked", type="radio"  value="map", name="boundaries">
       <label class="form-check-label" >
-        Draw a rectangle on a map
+        Draw a polygon on a map
       </label>
     </div>
 
@@ -44,7 +44,7 @@
     <!-- map content -->
     <div class="rectangle-content checked" >
       <br>
-        <p>Use the square button on the top right corner of the map to draw a rectangle. You can edit or delete the rectangle by using the other top right buttons. Then you can continue to fill the form on the right</p>
+        <p>Use the square button on the top right corner of the map to draw a polygon. You can edit or delete the polygon by using the other top right buttons. Then you can continue to fill the form on the right</p>
       <div>
         <label>Give name for the file</label>
         <input type="text" name="file_name", placeholder="file_name" value="rectangle">
@@ -155,7 +155,7 @@ map.on('drag', function() {
   var drawPluginOptions = {
     position: 'topright',
     draw: {
-      rectangle: {
+      polygon: {
         allowIntersection: false, // Restricts shapes to simple polygons
         drawError: {
           color: '#e1e100', // Color the shape will turn when intersects
@@ -168,9 +168,9 @@ map.on('drag', function() {
       // disable toolbar item by setting it to false
       polyline: false,
       circle: false, 
-      rectangle: true,
+      rectangle: false,
       marker: false,
-      polygon: false
+      polygon: true
       },
     edit: {
       featureGroup: editableLayers, //REQUIRED!!
@@ -185,7 +185,8 @@ map.on('drag', function() {
   //       console.log('The rectangle coordinates are: ');
   //       console.log(rectangle_LatLngs)
   //   });
-
+ 
+ // Updating the coordinates when editing, creating or deleting a polygon and setting the new coordinates to the form
   update_latlongs = function(coordinates_geojson){
     var coordinates_geojson = editableLayers.toGeoJSON();
     // var coordinates_stringify2 = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(coordinates_geojson));
@@ -242,23 +243,20 @@ map.on('drag', function() {
     editableLayers.addLayer(layer);
 
     coordinates_geojson = editableLayers.toGeoJSON()
-    if (type === 'rectangle') {
-      // var rectangle_LatLngs = layer.getLatLngs()
-      update_latlongs(coordinates_geojson)
-    }
+    update_latlongs(coordinates_geojson)
   });
   map.on('draw:edited', function (e) {
     var layers = e.layers;
     layers.eachLayer(function (layer) {
-    var rectangle_LatLngs = layer.getLatLngs()
-    update_latlongs(rectangle_LatLngs)
+    var polygon_LatLngs = layer.getLatLngs()
+    update_latlongs(polygon_LatLngs)
     });
   });
     map.on('draw:deleted', function (e) {
     var layers = e.layers;
     layers.eachLayer(function (layer) {
-    var rectangle_LatLngs = ''
-    update_latlongs(rectangle_LatLngs)
+    var polygon_LatLngs = ''
+    update_latlongs(polygon_LatLngs)
     });
   });
 
