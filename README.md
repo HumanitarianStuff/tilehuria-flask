@@ -6,22 +6,17 @@ A lot of this is fairly directly taken from the DigitalOcean community tutorial 
 
 ## Create and set up a server
 
-Create a cloud server (Ubuntu 18.04) and a sudo user. The usual setup from https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04. Log in.
+Create a cloud server (Ubuntu 20.04) and a sudo user. The usual setup from https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04. Log in.
 
-## Set up a bunch of python stuff
 
-```
-sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
-```
-
-### Install the Tilehuria-Flask folder
+### Install the Tilehuria-Flask directory
 
 ```
 git clone https://github.com/HumanitarianStuff/tilehuria-flask
 cd tilehuria-flask/
 ```
 
-#### Install the tilehuria code inside the app folder
+#### Install the tilehuria code inside the app directory
 
 ```
 cd app
