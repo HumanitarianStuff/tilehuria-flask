@@ -24,12 +24,12 @@ git clone https://github.com/HumanitarianStuff/tilehuria
 cd ../
 ```
 
-#### Add the URL_formats.txt file to the Tilehuria folder
-TileHuria downloads tiles from servers; many of these may be commercial and subject to terms of service which do not permit downloading for every type of endeavor. Please see the [TileHuria Appropriate Use policy](https://github.com/HumanitarianStuff/tilehuria#appropriate-use-dos-and-donts) for more details. The bottom line is: we can't provide you with a bunch of URLs that link directly to tile servers. You'll have to enter your own.
+#### Add URLs to the tileservers you wish to use in the URL_formats.txt file
+TileHuria downloads tiles from servers; many of these may be commercial and subject to terms of service which do not permit downloading for every type of endeavor. Please see the [TileHuria Appropriate Use policy](https://github.com/HumanitarianStuff/tilehuria#appropriate-use-dos-and-donts) for more details. The bottom line is: we can't provide you with a bunch of URLs that link directly to commercial tile servers. You'll have to enter your own. 
 
 A good source of tileserver URLs is [JOSM](https://josm.openstreetmap.de/). Install JOSM, go to the Imagery Preferences, and a number of tile URLs appropriate for humanitarian mapping use are visible.
 
-The URL_formats.txt file (which must be named exactly that, and should be placed in the app/tilehuria/tilehuria/ directory) is formatted as in the following examples:
+The URL_formats.txt file in the app/tilehuria/tilehuria/ directory) contains two links, both to OpenStreetMap tileservers. **Please do not abuse these; they are a public service provided by the non-profit OpenStreetMap, and should be used sparingly.** The URLs are formatted as in the following examples:
 
 ```
 myservername https://mytileserver.com/{zoom}/{x}/{y}.png?access_token=mytoken
@@ -38,7 +38,21 @@ anotherservername http://{switch:a,b,c,d}.tiles.atmyserver.org/{zoom}/{x}/{y}
 
 This is a flat text file with no formatting, headers, or anything. Note that on each line there is a name, a space, then a URL (the name will be used to populate the dropdown for each user's available tileservers). Each URL contains variables contained in {curly braces}; these are replaced for each individual tile with the appropriate values. TileHuria will work with almost any SlippyMap compliant tileserver, it's just a matter of getting the URL right.
 
+If you are doing work with humanitarian mapping and need help with this, get in touch with Ivan Gayton at the Humanitarian OpenStreetMap Team; if your cause is worthy and we're confident that you aren't going to abuse the trust of imagery providers we may be able to assist you.
+
 ### Set up a virtualenv and the basic infrastructure of Flask
+
+```
+sudo apt install -y python3-venv
+sudo apt install -y python3-dev
+python3 -m venv venv
+source venv/bin/activate
+pip install wheel
+pip install flask
+pip install uwsgi
+```
+
+There's a bug that may prevent the install of uwsgi using pip on Ubuntu 20.04. If you encounter this, install uwsgi using apt (```sudo apt install uwsgi-plugin-python3```)
 
 #### install GDAL
 Discussion of this task, which seems way more complicated than it should be, can be found here (where I found a way to accomplish it): https://stackoverflow.com/questions/32066828/install-gdal-in-virtualenvwrapper-environment
@@ -46,17 +60,6 @@ first the gdal library itself:
 
 ```
 sudo apt install libgdal-dev
-```
-
-#### TODO: this installs quite an old version of GDAL. Maybe use the ubuntugis PPA?
-
-Now the virtual environment:
-```
-sudo apt install -y python3-venv
-python3 -m venv venv
-source venv/bin/activate
-pip install wheel
-pip install uwsgi flask
 ```
 
 Then the pygdal hooks:
@@ -75,6 +78,8 @@ echo $ERROR
 # now find the largest matching number in the string contained in the ERROR variable. Stick it in variable newgdalversion and use it in a repeat command
 pip install pygdal==$newgdalversion
 ```
+
+At time of writing that produces ```pip install pygdal==3.0.4.6```.
 
 ## Install the imaging library
 
