@@ -52,8 +52,6 @@ pip install flask
 pip install uwsgi
 ```
 
-There's a bug that may prevent the install of uwsgi using pip on Ubuntu 20.04. If you encounter this, install uwsgi using apt (```sudo apt install uwsgi-plugin-python3```)
-
 #### install GDAL
 Discussion of this task, which seems way more complicated than it should be, can be found here (where I found a way to accomplish it): https://stackoverflow.com/questions/32066828/install-gdal-in-virtualenvwrapper-environment
 first the gdal library itself:
@@ -119,7 +117,7 @@ uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
 Again, try connecting to it from your browser, and when done testing control-C to stop it. 
 
 ## Create a service and start it up
-bung the following into ```/etc/systemd/system/tilehuriaflask.service```
+bung the following into ```/etc/systemd/system/tilehuriaflask.service``` (this file is actually provided in the repo, so you can just copy it over ```sudo cp tilehuriaflask.service /etc/systemd/system/```
 
 ```
 [Unit]
