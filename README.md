@@ -152,7 +152,7 @@ sudo apt install nginx
 
 ## Configure Nginx to serve the app
 
-Enter the following into ```/etc/nginx/sites-available/tilehuriaflask```:
+Enter the following into ```/etc/nginx/sites-available/tilehuriaflask``` (again, file provided, just ```sudo cp tilehuriaflask /etc/sites-available/```:
 
 
 ```
