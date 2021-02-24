@@ -1,0 +1,28 @@
+
+# TODO for devs (should go into GitHub Issues)
+
+## Critical (in rough order of importance)
+
+- Ideally each user would have their own URL list saved. This would require implementing users, logins, etc.
+  - Use the [Flask login library](https://flask-login.readthedocs.io/en/latest/)
+  - Provide a page for users to enter their custom URLs, which will be stored in their very own URL_formats.txt files (or database tables).
+  - Provide a single login per humanitarian org that needs Tilehuria and has agreed to abide the the various tile providers' terms of service. 
+- TileHuria-Flask doesn't provide users any insight into errors with their AOI files (or any other errors for that matter). There's a stubbed-in Status column in the MBTiles screen, but it doesn't currently say anything.
+  - Current idea is to save an error log file for each upload and link to that in the Error column.
+  - This should be implemented using the [python Logging facility](https://docs.python.org/3/library/logging.html), which in any case [flask uses](http://flask.pocoo.org/docs/1.0/logging/) by default.
+- The Delete button should probably actually do something
+- There should be an error and/or warning when someone attempts to create too large an MBTile.
+  - Either fetch the area of the AOI using GDAL and calculate the number of tiles given the requested zoom levels, or
+  - Just run the create_csv script and count the tiles. This will still be problematic if someone attempts to generate a CSV with a high zoom level for a whole country&mdash;the script will stall or maybe even run out of memory&mdash;but in most circumstances it'll be simpler and more accurate (for one thing, it'll give a precise estimate of the number of tiles that will be generated).
+
+## Nice to have
+- Currently to generate multiple MBTile sets from one AOI you just upload the same thing multiple times. This, of course, leaves open the possibility of different AOIs with the same name (prediction: many versions of test.geojson).
+  - Ideally check for an identically-named file (maybe even check if it's the same file byte-for-byte) and offer to either use the already-uploaded one with different settings or rename.
+  - In this case, we should re-think the naming scheme to account for more than just tileserver.
+- Implement an adaptive concurrent download strategy to account for varying internet speeds.
+  - The current threaded downloading works fine on the cloud server (defaults to 50 threads downloading concurrently, which seems to be about right), but running locally in an area with slow internet often results in timed-out tiles.
+  - Ping suggested http://docs.python-requests.org/en/master/
+- Allow for direct serving of tiles from the cloud server.
+  - The tiles are already downloaded onto the server. It would be handy to have them instantly available for a mapathon.
+  - This would be particularly useful if someone is planning a mapathon and preps a POSM-style server beforehand (or even in a high-bandwidth country prior to traveling to a low-bandwidth place). In some cases serving tiles on a LAN might be preferable to distributing MBTiles on removable media.
+- Nice to get a Pip install working.

@@ -2,92 +2,114 @@
 
 {% block content %}
 <head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
-    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
-    </script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
-<div id="mapid" style="float: right; margin: 4px; width: 600px; height: 400px; position: relative; outline: none;" class="leaflet-container leaflet-fade-anim leaflet-grab leaflet-touch-drag" tabindex="0">
-  <script>
-var map = L.map('mapid', { drawControl: true }).setView([51.505, -0.09], 13);
 
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-      maxZoom: 18,
-      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      id: 'mapbox/streets-v11'
-    }).addTo(map);
-
-  </script>
+<div class="page-header">
+  <h1>Please upload a polygon file or draw a polygon</h1>  
 </div>
-
-<div class="mainblock">
+<br>
+<form enctype="multipart/form-data" method=post action="/upload">
   <div class="leftpane">
-    <form enctype="multipart/form-data" method=post action="/upload">
+    <!-- Selection for geojson or drawing -->
+    <b>Do you want to select the boundaries of the tiles by GeoJSON or by drawing a polygon?</b>
+    <div class="form-check">
+      <input class="form-check-input geojson-radio" type="radio" value="geojson", name="boundaries">
+      <label class="form-check-label" for="exampleRadios1">
+        Upload GeJSON file
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input rectangle-input", checked="checked", type="radio"  value="map", name="boundaries">
+      <label class="form-check-label" >
+        Draw a polygon on a map
+      </label>
+    </div>
+
+    <!-- geojson content -->
+    <div class="geojson-content">
       <div>
-        <h1>Please upload a polygon file</h1>
+        <br>
         <p>It should be a GeoJSON file containing one or more polygons, in WGS84 Coordinate Reference System (this should be the default for most tools that produce such files).</p><p>With a bit of luck, after submitting your file you will find a corresponding MBTile file on the MBTiles page.</p>
       </div>
-      <hr>
-    
       <div>
         <input id="polygon" name="polygon" type="file" />
       </div>
-     
-    
-      <div>
-        <p>Please select a tile server:
-          <select id="tileserver" name="tileserver">
-    	{% for servername in servernames %}
-      	  <option>{{servername}}</option>
-    	{% endfor %}
-          </select>
-        </p>
-      </div>
-    
-      <div>
-        <p>Pick a minimum zoom level
-          <input type="number" name="minzoom" id="minzoom" min="8" max="22" step="1" value="16">
-        </p>
-      </div>
-    
-      <div>
-        <p>Pick a maximum zoom level
-          <input type="number" name="maxzoom" id="maxzoom" min="8" max="22" step="1" value="20">
-        </p>
-      </div>
-      
-      <div>
-        <p>Please select a tile file format:
-          <select id="format" name="format">
-      	<option>JPEG</option>
-    	<option>PNG</option>
-          </select>
-          (JPEG gives smaller files, PNG has better color depth and allows transparency).
-        </p>
-      </div>
-    
-      <div>
-        <button type="submit" style="color:purple"><strong>Submit</strong></button>
-      </div>
-    </form>
-  </div>
-  <div class="mappane">
-  </div>
-</div>
+    </div>
+    <br>
 
-<script>
-  var mymap = L.map('mappane').setView([51.505, -0.09], 13);
-  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-  maxZoom: 18,
-  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-  '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-  'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-  id: 'mapbox/streets-v11'
-  }).addTo(mymap);
-</script>
+    <!-- map content -->
+    <div class="rectangle-content checked" >
+      <br>
+        <p>Use the square button on the top right corner of the map to draw a polygon. You can edit or delete the polygon by using the other top right buttons. Then you can continue to fill the form on the right</p>
+      <div>
+        <label>Give name for the file</label>
+        <input type="text" name="file_name", placeholder="file_name" value="rectangle">
+      </div>
+      <div id="mapid" class="leaflet-container leaflet-fade-anim leaflet-grab leaflet-touch-drag" tabindex="0">
+        <div id="map">
+        </div>
+      </div>
+      <a id="coordinates_link"  href='#'>Download the Coordinates</a>
+      <input type="text" name="map_input" id="coordinates" ></input>
+    </div>
+  </div>
+  <div class="mainblock" style="">
+    <div class="rightpane">
+
+    <!-- opts selection     -->
+      <div class="card card-body bg-light">
+        <div>
+          <p>Please select a tile server:
+            <select class="form-control" id="tileserver" name="tileserver">
+      	{% for servername in servernames %}
+        	  <option>{{servername}}</option>
+      	{% endfor %}
+            </select>
+          </p>
+        </div>
+        <div class="row g-2 align-items-center">
+          <div class="col-sm-8">
+            <label>Pick a minimum zoom level</label> 
+          </div>
+          <div class="col-sm-4">
+            <input class="form-control" type="number" name="minzoom" id="minzoom" min="8" max="22" step="1" value="16">
+          </div>
+        </div>
+        <br>
+      
+        <div class="row g-2 align-items-center">
+          <div class="col-sm-8">
+            <label>Pick a maximum zoom level</label> 
+          </div>
+          <div class="col-sm-4">
+            <input class="form-control" type="number" name="maxzoom" id="maxzoom" min="8" max="22" step="1" value="20">
+          </div>
+        </div>
+        <br>
+        <div class="row g-2 align-items-center">
+          <div class="col-sm-8">
+            <label>Please select a tile file format:</label>
+          </div>
+          <div class="col-sm-4">
+            <select class="form-control" id="format" name="format">
+        	     <option>JPEG</option>
+      	       <option>PNG</option>
+            </select>
+            </div>
+            <label class="col-sm-12">(JPEG gives smaller files, PNG has better color depth and allows transparency).</label>
+        </div>
+      
+        <div>
+          <button class="btn btn-outline-info" type="submit" id="submit_button"><strong>Submit</strong></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
 
 <hr>
 
@@ -97,5 +119,146 @@ var map = L.map('mapid', { drawControl: true }).setView([51.505, -0.09], 13);
   <p></p>
 </div>
 
+<script>
+$(document).ready(function(){
+  $('.geojson-radio').click(function () {
+     $('.rectangle-content').removeClass('checked');
+     $('.geojson-content').addClass('checked');
+  });
+  $('.rectangle-input').click(function () {
+     $('.geojson-content').removeClass('checked');
+     $('.rectangle-content').addClass('checked');
+  });
+});
+// center of the map
+var center = [0.0, 151.2094];
+// Create the map
+var map = new L.map('map').setView(center, 1);
+// Set up the OSM layer
+L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Data © <a href="http://osm.org/copyright">OpenStreetMap</a>',
+    maxZoom: 18,
+  }).addTo(map);
 
+var southWest = L.latLng(-90, -180),
+northEast = L.latLng(90, 180);
+var bounds = L.latLngBounds(southWest, northEast);
+
+map.setMaxBounds(bounds);
+map.on('drag', function() {
+    map.panInsideBounds(bounds, { animate: false });
+});
+  // Initialise the FeatureGroup to store editable layers
+  var editableLayers = new L.FeatureGroup();
+  map.addLayer(editableLayers);
+  var drawPluginOptions = {
+    position: 'topright',
+    draw: {
+      polygon: {
+        allowIntersection: false, // Restricts shapes to simple polygons
+        drawError: {
+          color: '#e1e100', // Color the shape will turn when intersects
+          message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+        },
+        shapeOptions: {
+          color: '#97009c'
+        }
+      },
+      // disable toolbar item by setting it to false
+      polyline: false,
+      circle: false, 
+      rectangle: false,
+      marker: false,
+      polygon: true
+      },
+    edit: {
+      featureGroup: editableLayers, //REQUIRED!!
+    }
+  };
+  // Initialise the draw control and pass it the FeatureGroup of editable layers
+  var drawControl = new L.Control.Draw(drawPluginOptions);
+  map.addControl(drawControl);
+
+  // fetch('/upload')
+  //   .then(function (text) {
+  //       console.log('The rectangle coordinates are: ');
+  //       console.log(rectangle_LatLngs)
+  //   });
+ 
+ // Updating the coordinates when editing, creating or deleting a polygon and setting the new coordinates to the form
+  update_latlongs = function(coordinates_geojson){
+    var coordinates_geojson = editableLayers.toGeoJSON();
+    // var coordinates_stringify2 = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(coordinates_geojson));
+    // var coordinates_stringify3 = encodeURIComponent(JSON.stringify(coordinates_geojson));
+
+    // console.log('coordinates_stringify: ' + coordinates_stringify);
+    // console.log('coordinates_stringify2: ' + coordinates_stringify2);
+    // console.log('coordinates_stringify3: ' + coordinates_stringify3);
+
+    var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(coordinates_geojson));
+    // Create export
+    document.getElementById('coordinates_link').setAttribute('href', 'data:' + convertedData);
+    document.getElementById('coordinates_link').setAttribute('download','coordinates_geojson.geojson');
+    console.log('convertedData: ' + convertedData);
+
+
+    document.getElementById('coordinates').innerHTML = 'The coordinates of the rectangle: '+ convertedData
+    document.getElementById('coordinates').value = convertedData;
+    // console.log('rectangle_LatLngs: ' + rectangle_LatLngs);
+    // console.log('rectangle_LatLngs: ' + rectangle_LatLngs)
+    console.log('coordinates_geojson: ' + convertedData);
+
+    // console.log(JSON.stringify(coordinates_geojson, null, 2));
+
+    // fetch(`${window.origin}/index`, {
+    //   method: "POST",
+    //   body: JSON.stringify(rectangle_LatLngs)
+
+    // })
+
+    // fetch('/upload')
+    // .then(function (response) {
+    //     return response.text();
+    // }).then(function (text) {
+    //     console.log('GET response text:');
+    //     console.log(text); // Print the greeting as text
+    // });
+  }
+
+
+  function downloadGeojson() {
+    // Create export
+    var convertedData = document.getElementById('coordinates').value
+    document.getElementById('coordinates_link').setAttribute('href', 'data:' + convertedData);
+    document.getElementById('coordinates_link').setAttribute('download','coordinates_geojson.geojson');
+  }
+  document.getElementById("submit_button").addEventListener("click", downloadGeojson);
+
+
+  map.on('draw:created', function(e) {
+    var type = e.layerType, 
+    layer = e.layer;
+
+    editableLayers.addLayer(layer);
+
+    coordinates_geojson = editableLayers.toGeoJSON()
+    update_latlongs(coordinates_geojson)
+  });
+  map.on('draw:edited', function (e) {
+    var layers = e.layers;
+    layers.eachLayer(function (layer) {
+    var polygon_LatLngs = layer.getLatLngs()
+    update_latlongs(polygon_LatLngs)
+    });
+  });
+    map.on('draw:deleted', function (e) {
+    var layers = e.layers;
+    layers.eachLayer(function (layer) {
+    var polygon_LatLngs = ''
+    update_latlongs(polygon_LatLngs)
+    });
+  });
+
+</script>
 {% endblock %}

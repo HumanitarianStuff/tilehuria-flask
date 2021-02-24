@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve tilehuriaflask
+After=network.target
+
+[Service]
+User=tilehuria
+Group=www-data
+WorkingDirectory=/home/tilehuria/tilehuria-flask
+Environment="PATH=/home/tilehuria/tilehuria-flask/venv/bin"
+ExecStart=/home/tilehuria/tilehuria-flask/venv/bin/uwsgi --ini tilehuriaflask.ini
+
+[Install]
+WantedBy=multi-user.target

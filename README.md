@@ -6,22 +6,17 @@ A lot of this is fairly directly taken from the DigitalOcean community tutorial 
 
 ## Create and set up a server
 
-Create a cloud server (Ubuntu 18.04) and a sudo user. The usual setup from https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04. Log in.
+Create a cloud server (Ubuntu 20.04) and a sudo user. The usual setup from https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04. Log in.
 
-## Set up a bunch of python stuff
 
-```
-sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
-```
-
-### Install the Tilehuria-Flask folder
+### Install the Tilehuria-Flask directory
 
 ```
 git clone https://github.com/HumanitarianStuff/tilehuria-flask
 cd tilehuria-flask/
 ```
 
-#### Install the tilehuria code inside the app folder
+#### Install the tilehuria code inside the app directory
 
 ```
 cd app
@@ -29,12 +24,12 @@ git clone https://github.com/HumanitarianStuff/tilehuria
 cd ../
 ```
 
-#### Add the URL_formats.txt file to the Tilehuria folder
-TileHuria downloads tiles from servers; many of these may be commercial and subject to terms of service which do not permit downloading for every type of endeavor. Please see the [TileHuria Appropriate Use policy](https://github.com/HumanitarianStuff/tilehuria#appropriate-use-dos-and-donts) for more details. The bottom line is: we can't provide you with a bunch of URLs that link directly to tile servers. You'll have to enter your own.
+#### Add URLs to the tileservers you wish to use in the URL_formats.txt file
+TileHuria downloads tiles from servers; many of these may be commercial and subject to terms of service which do not permit downloading for every type of endeavor. Please see the [TileHuria Appropriate Use policy](https://github.com/HumanitarianStuff/tilehuria#appropriate-use-dos-and-donts) for more details. The bottom line is: we can't provide you with a bunch of URLs that link directly to commercial tile servers. You'll have to enter your own. 
 
 A good source of tileserver URLs is [JOSM](https://josm.openstreetmap.de/). Install JOSM, go to the Imagery Preferences, and a number of tile URLs appropriate for humanitarian mapping use are visible.
 
-The URL_formats.txt file (which must be named exactly that, and should be placed in the app/tilehuria/tilehuria/ directory) is formatted as in the following examples:
+The URL_formats.txt file in the app/tilehuria/tilehuria/ directory) contains two links, both to OpenStreetMap tileservers. **Please do not abuse these; they are a public service provided by the non-profit OpenStreetMap, and should be used sparingly.** The URLs are formatted as in the following examples:
 
 ```
 myservername https://mytileserver.com/{zoom}/{x}/{y}.png?access_token=mytoken
@@ -43,7 +38,19 @@ anotherservername http://{switch:a,b,c,d}.tiles.atmyserver.org/{zoom}/{x}/{y}
 
 This is a flat text file with no formatting, headers, or anything. Note that on each line there is a name, a space, then a URL (the name will be used to populate the dropdown for each user's available tileservers). Each URL contains variables contained in {curly braces}; these are replaced for each individual tile with the appropriate values. TileHuria will work with almost any SlippyMap compliant tileserver, it's just a matter of getting the URL right.
 
+If you are doing work with humanitarian mapping and need help with this, get in touch with Ivan Gayton at the Humanitarian OpenStreetMap Team; if your cause is worthy and we're confident that you aren't going to abuse the trust of imagery providers we may be able to assist you.
+
 ### Set up a virtualenv and the basic infrastructure of Flask
+
+```
+sudo apt install -y python3-venv
+sudo apt install -y python3-dev
+python3 -m venv venv
+source venv/bin/activate
+pip install wheel
+pip install flask
+pip install uwsgi
+```
 
 #### install GDAL
 Discussion of this task, which seems way more complicated than it should be, can be found here (where I found a way to accomplish it): https://stackoverflow.com/questions/32066828/install-gdal-in-virtualenvwrapper-environment
@@ -51,17 +58,6 @@ first the gdal library itself:
 
 ```
 sudo apt install libgdal-dev
-```
-
-#### TODO: this installs quite an old version of GDAL. Maybe use the ubuntugis PPA?
-
-Now the virtual environment:
-```
-sudo apt install -y python3-venv
-python3 -m venv venv
-source venv/bin/activate
-pip install wheel
-pip install uwsgi flask
 ```
 
 Then the pygdal hooks:
@@ -80,6 +76,8 @@ echo $ERROR
 # now find the largest matching number in the string contained in the ERROR variable. Stick it in variable newgdalversion and use it in a repeat command
 pip install pygdal==$newgdalversion
 ```
+
+At time of writing that produces ```pip install pygdal==3.0.4.6```.
 
 ## Install the imaging library
 
@@ -119,7 +117,7 @@ uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
 Again, try connecting to it from your browser, and when done testing control-C to stop it. 
 
 ## Create a service and start it up
-bung the following into ```/etc/systemd/system/tilehuriaflask.service```
+bung the following into ```/etc/systemd/system/tilehuriaflask.service``` (this file is actually provided in the repo, so you can just copy it over ```sudo cp tilehuriaflask.service /etc/systemd/system/```
 
 ```
 [Unit]
@@ -154,7 +152,7 @@ sudo apt install nginx
 
 ## Configure Nginx to serve the app
 
-Enter the following into ```/etc/nginx/sites-available/tilehuriaflask```:
+Enter the following into ```/etc/nginx/sites-available/tilehuriaflask``` (again, file provided, just ```sudo cp tilehuriaflask /etc/sites-available/```:
 
 
 ```
@@ -173,35 +171,8 @@ and symlink it to the sites-enabled by typing```sudo ln -s /etc/nginx/sites-avai
 
 # Secure the whole damned thing with LetsEncrypt
 ```
-sudo add-apt-repository ppa:certbot/certbot
-sudo apt install python-certbot-nginx
+sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
 ```
 
-# TODO for devs
-
-## Critical (in rough order of importance)
-
-- Ideally each user would have their own URL list saved. This would require implementing users, logins, etc.
-  - Use the [Flask login library](https://flask-login.readthedocs.io/en/latest/)
-  - Provide a page for users to enter their custom URLs, which will be stored in their very own URL_formats.txt files (or database tables).
-  - Provide a single login per humanitarian org that needs Tilehuria and has agreed to abide the the various tile providers' terms of service. 
-- TileHuria-Flask doesn't provide users any insight into errors with their AOI files (or any other errors for that matter). There's a stubbed-in Status column in the MBTiles screen, but it doesn't currently say anything.
-  - Current idea is to save an error log file for each upload and link to that in the Error column.
-  - This should be implemented using the [python Logging facility](https://docs.python.org/3/library/logging.html), which in any case [flask uses](http://flask.pocoo.org/docs/1.0/logging/) by default.
-- The Delete button should probably actually do something
-- There should be an error and/or warning when someone attempts to create too large an MBTile.
-  - Either fetch the area of the AOI using GDAL and calculate the number of tiles given the requested zoom levels, or
-  - Just run the create_csv script and count the tiles. This will still be problematic if someone attempts to generate a CSV with a high zoom level for a whole country&mdash;the script will stall or maybe even run out of memory&mdash;but in most circumstances it'll be simpler and more accurate (for one thing, it'll give a precise estimate of the number of tiles that will be generated).
-
-## Nice to have
-- Currently to generate multiple MBTile sets from one AOI you just upload the same thing multiple times. This, of course, leaves open the possibility of different AOIs with the same name (prediction: many versions of test.geojson).
-  - Ideally check for an identically-named file (maybe even check if it's the same file byte-for-byte) and offer to either use the already-uploaded one with different settings or rename.
-  - In this case, we should re-think the naming scheme to account for more than just tileserver.
-- Implement an adaptive concurrent download strategy to account for varying internet speeds.
-  - The current threaded downloading works fine on the cloud server (defaults to 50 threads downloading concurrently, which seems to be about right), but running locally in an area with slow internet often results in timed-out tiles.
-  - Ping suggested http://docs.python-requests.org/en/master/
-- Allow for direct serving of tiles from the cloud server.
-  - The tiles are already downloaded onto the server. It would be handy to have them instantly available for a mapathon.
-  - This would be particularly useful if someone is planning a mapathon and preps a POSM-style server beforehand (or even in a high-bandwidth country prior to traveling to a low-bandwidth place). In some cases serving tiles on a LAN might be preferable to distributing MBTiles on removable media.
-- Nice to get a Pip install working.
+It should work now.
