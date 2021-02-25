@@ -86,11 +86,9 @@ if [ ! -f /etc/nginx/sites-enabled/tilehuriaflask ]; then
 else echo Looks like the symlink has already been created
 fi
 
-
 echo installing Certbot
 if ! type "certbot"; then
-    sudo add-apt-repository -y ppa:certbot/certbot
-    sudo apt install -y python-certbot-nginx
+    sudo apt install -y certbot python3-certbot-nginx
 else echo Certbot seems to be already installed
 fi
 
