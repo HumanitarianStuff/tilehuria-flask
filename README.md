@@ -116,33 +116,6 @@ uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
 ```
 Again, try connecting to it from your browser, and when done testing control-C to stop it. 
 
-## Create a service and start it up
-bung the following into ```/etc/systemd/system/tilehuriaflask.service``` (this file is actually provided in the repo, so you can just replace ```tilehuria.org``` with your domain name and copy it over ```sudo cp tilehuriaflask.service /etc/systemd/system/```
-
-```
-[Unit]
-Description=uWSGI instance to serve tilehuriaflask
-After=network.target
-
-[Service]
-User=tilehuria
-Group=www-data
-WorkingDirectory=/home/tilehuria/tilehuria-flask
-Environment="PATH=/home/tilehuria/tilehuria-flask/venv/bin"
-ExecStart=/home/tilehuria/tilehuria-flask/venv/bin/uwsgi --ini tilehuriaflask.ini
-
-[Install]
-WantedBy=multi-user.target
-
-```
-
-Now start and enable the service by:
-```
-sudo systemctl start tilehuriaflask.service
-sudo systemctl enable tilehuriaflask.service
-```
-
-If you want to test that this worked, enter ```sudo systemctl status tilehuriaflask.service```
 
 ## Install Nginx
 
@@ -174,5 +147,32 @@ and symlink it to the sites-enabled by typing```sudo ln -s /etc/nginx/sites-avai
 sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
 ```
+## Create a service and start it up
+bung the following into ```/etc/systemd/system/tilehuriaflask.service``` (this file is actually provided in the repo, so you can just replace ```tilehuria.org``` with your domain name and copy it over ```sudo cp tilehuriaflask.service /etc/systemd/system/```
+
+```
+[Unit]
+Description=uWSGI instance to serve tilehuriaflask
+After=network.target
+
+[Service]
+User=tilehuria
+Group=www-data
+WorkingDirectory=/home/tilehuria/tilehuria-flask
+Environment="PATH=/home/tilehuria/tilehuria-flask/venv/bin"
+ExecStart=/home/tilehuria/tilehuria-flask/venv/bin/uwsgi --ini tilehuriaflask.ini
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+Now start and enable the service by:
+```
+sudo systemctl start tilehuriaflask.service
+sudo systemctl enable tilehuriaflask.service
+```
+
+If you want to test that this worked, enter ```sudo systemctl status tilehuriaflask.service```
 
 It should work now.
