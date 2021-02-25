@@ -49,7 +49,7 @@ pip install pygdal==$pygdalversion
 rm pygdalversion.txt
 
 
-echo installing pillow (Python Imaging Library fork)
+echo installing pillow Python Imaging Library fork
 pip install pillow
 
 echo installing SQLAlchemy because someday we will use it
