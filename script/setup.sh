@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
 # Sets up a TileHuria server.
-# Tested on a $5/month Digital Ocean droplet with Ubuntu 20.04
+# Tested on a $10/month Digital Ocean droplet with Ubuntu 20.04
 # installed.
 
 # Assumes a non-root sudo user called tilehuria.
@@ -28,25 +28,29 @@ pip install wheel
 pip install flask
 pip install uwsgi
 
-ech installing GDAL and pygdal
+echo installing GDAL and pygdal
 sudo apt install libgdal-dev
 
 # This will break; need to implement workaround below
-pip install pygdal==3.0.4.6
+#pip install pygdal==3.0.4.6
 
-# echo setting up python hooks for GDAL, pygdal.
-# echo Doing so via a horrible hack using a Python script to extract the latest
-# echo version of pygdal compatible with the specific GDAL installed. 
-# gdalversion=$(gdal-config --version)
-# ERROR=$((pip install pygdal==$gdalversion) 2>&1)
-# echo $ERROR
-# python3 parse_pip_error.py "$ERROR" "$gdalversion"
-# pygdalversion=$(<gdalversion.txt)
-# echo
-# echo So we are installing pygdal version $pygdalversion
-# pip install pygdal==$pygdalversion
-# rm pygdalversion.txt
-# 
+echo setting up python hooks for GDAL, pygdal.
+echo Doing so via a horrible hack using a Python script to extract the latest
+sleep 5
+echo version of pygdal compatible with the specific GDAL installed. 
+gdalversion=$(gdal-config --version)
+echo $gdalversion
+sleep 5
+ERROR=$((pip install pygdal==$gdalversion) 2>&1)
+echo $ERROR
+sleep 5
+python3 parse_pip_error.py "$ERROR" "$gdalversion"
+pygdalversion=$(<gdalversion.txt)
+echo
+echo in 10 seconds we are installing pygdal version $pygdalversion
+sleep 10
+pip install pygdal==$pygdalversion
+rm pygdalversion.txt
 
 
 echo installing pillow (Python Imaging Library fork)
