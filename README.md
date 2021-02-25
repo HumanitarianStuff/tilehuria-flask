@@ -39,7 +39,7 @@ This is a flat text file with no formatting, headers, or anything. Note that on 
 If you are doing work with humanitarian mapping and need help with this, get in touch with Ivan Gayton at the Humanitarian OpenStreetMap Team; if your cause is worthy and we're confident that you aren't going to abuse the trust of imagery providers we may be able to assist you.
 
 
-# The easy way
+# The Easy Way
 In the script directory, there is a setup script that, if everything is perfect, will install the Tilehuria web app.
 
 ```
