@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash
 
 # Sets up a TileHuria server.
 # Tested on a $10/month Digital Ocean droplet with Ubuntu 20.04
@@ -29,26 +29,22 @@ pip install flask
 pip install uwsgi
 
 echo installing GDAL and pygdal
-sudo apt install libgdal-dev
+sudo apt install -y libgdal-dev
 
 # This will break; need to implement workaround below
 #pip install pygdal==3.0.4.6
 
 echo setting up python hooks for GDAL, pygdal.
 echo Doing so via a horrible hack using a Python script to extract the latest
-sleep 5
 echo version of pygdal compatible with the specific GDAL installed. 
 gdalversion=$(gdal-config --version)
 echo $gdalversion
-sleep 5
 ERROR=$((pip install pygdal==$gdalversion) 2>&1)
 echo $ERROR
-sleep 5
 python3 parse_pip_error.py "$ERROR" "$gdalversion"
-pygdalversion=$(<gdalversion.txt)
+pygdalversion=$(<pygdalversion.txt)
 echo
-echo in 10 seconds we are installing pygdal version $pygdalversion
-sleep 10
+echo installing pygdal version $pygdalversion
 pip install pygdal==$pygdalversion
 rm pygdalversion.txt
 
