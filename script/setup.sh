@@ -1,8 +1,10 @@
-#!/bin/bash -eu
+#!/bin/bash
 
 # Sets up a TileHuria server.
-# Tested on a $5/month Digital Ocean droplet with Ubuntu 18.04 installed.
-# Assumes a non-root sudo user.
+# Tested on a $10/month Digital Ocean droplet with Ubuntu 20.04
+# installed.
+
+# Assumes a non-root sudo user called tilehuria.
 
 echo please enter the domain name of your TileHuria server
 read domain_name
@@ -10,17 +12,51 @@ echo
 echo Please enter an email address for certificate renewal information
 read email
 echo
-echo You can add the UbuntuGIS repositories to get the latest version of GDAL.
-echo WARNING: Do not do this on your local computer unless you know what you are doing.
-echo Changing the version of GDAL on your local machine can break stuff like QGIS.
-read -r -p "Add the UbuntuGIS repositories? [y/N] " response
-response=${response,,}    # tolower
-echo $response
-echo 
-echo
 echo Updating and upgrading the OS
 sudo apt -y update
 sudo apt -y upgrade
+
+echo setting up a few random Python dependencies
+sudo apt install -y build-essential libssl-dev libffi-dev python3-setuptools
+
+echo setting up virtualenv and Flask infrastructure
+sudo apt install -y python3-venv
+sudo apt install -y python3-dev
+python3 -m venv venv
+source venv/bin/activate
+pip install wheel
+pip install flask
+pip install uwsgi
+
+echo installing GDAL and pygdal
+sudo apt install -y libgdal-dev
+
+# This will break; need to implement workaround below
+#pip install pygdal==3.0.4.6
+
+echo setting up python hooks for GDAL, pygdal.
+echo Doing so via a horrible hack using a Python script to extract the latest
+echo version of pygdal compatible with the specific GDAL installed. 
+gdalversion=$(gdal-config --version)
+echo $gdalversion
+ERROR=$((pip install pygdal==$gdalversion) 2>&1)
+echo $ERROR
+python3 parse_pip_error.py "$ERROR" "$gdalversion"
+pygdalversion=$(<pygdalversion.txt)
+echo
+echo installing pygdal version $pygdalversion
+pip install pygdal==$pygdalversion
+rm pygdalversion.txt
+
+
+echo installing pillow Python Imaging Library fork
+pip install pillow
+
+echo installing SQLAlchemy because someday we will use it
+pip install Flask-SQLAlchemy
+
+echo installing dotenv for some reason
+pip install python-dotenv
 
 echo installing nginx
 if ! type "nginx"; then
@@ -52,61 +88,13 @@ fi
 
 echo installing Certbot
 if ! type "certbot"; then
-    sudo add-apt-repository -y ppa:certbot/certbot
-    sudo apt install -y python-certbot-nginx
+    sudo apt install -y certbot python3-certbot-nginx
 else echo Certbot seems to be already installed
 fi
 
 echo Procuring a certificate for the site from LetsEncrypt using Certbot
 sudo certbot --nginx -n --agree-tos --redirect -m $email -d $domain_name -d www.$domain_name
 
-echo setting up a bunch of Python dependencies
-sudo apt install -y python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
-
-echo collecting TileHuria
-cd app
-if [ ! -d tilehuria ]; then  
-    git clone https://github.com/HumanitarianStuff/tilehuria
-else git pull
-fi
-cd ../
-
-echo setting up GDAL. 
-
-if [[ "$response" =~ ^(yes|y)$ ]]; then
-    echo Adding UbuntuGIS repository for recent version of GDAL
-    sudo apt install -y python-software-properties
-    sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 314DF160
-    sudo apt update
-fi
-
-sudo apt install -y libgdal-dev
-
-echo setting up a Python3 virtual environment
-sudo apt install -y python3-venv
-python3 -m venv venv
-source venv/bin/activate
-
-echo setting up uwsgi and flask
-pip install wheel
-pip install uwsgi flask
-
-echo setting up python hooks for GDAL, pygdal.
-echo Doing so via a horrible hack using a Python script to extract the latest
-echo version of pygdal compatible with the specific GDAL installed. 
-gdalversion=$(gdal-config --version)
-ERROR=$((pip install pygdal==$gdalversion) 2>&1)
-echo $ERROR
-python3 parse_pip_error.py "$ERROR" "$gdalversion"
-pygdalversion=$(<gdalversion.txt)
-echo
-echo So we are installing pygdal version $pygdalversion
-pip install pygdal==$pygdalversion
-rm pygdalversion.txt
-
-echo installing the Pillow imaging library
-pip install pillow
 
 echo adding the TileHuria service to Systemd
 cat > tilehuriaflask.service <<EOF

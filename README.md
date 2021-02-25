@@ -2,7 +2,7 @@
 
 Basic instructions for setting up a TileHuria server using Flask.
 
-A lot of this is fairly directly taken from the DigitalOcean community tutorial https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04.
+A lot of this is fairly directly taken from [the DigitalOcean community tutorial on Flask with uWSGI and Nginx on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-20-04).
 
 ## Create and set up a server
 
@@ -116,6 +116,37 @@ uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
 ```
 Again, try connecting to it from your browser, and when done testing control-C to stop it. 
 
+
+## Install Nginx
+
+```
+sudo apt install nginx
+```
+
+## Configure Nginx to serve the app
+
+Enter the following into ```/etc/nginx/sites-available/tilehuriaflask``` (again, file provided, just replace ```tilehuria.org``` with your domain name and copy it over with ```sudo cp tilehuriaflask /etc/sites-available/```:
+
+
+```
+server {
+    listen 80;
+    server_name tilehuria.org www.tilehuria.org;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/tilehuria/tilehuria-flask/tilehuriaflask.sock;
+    }
+}
+```
+
+and symlink it to the sites-enabled by typing```sudo ln -s /etc/nginx/sites-available/tilehuriaflask /etc/nginx/sites-enabled```
+
+# Secure the whole damned thing with LetsEncrypt
+```
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
+```
 ## Create a service and start it up
 bung the following into ```/etc/systemd/system/tilehuriaflask.service``` (this file is actually provided in the repo, so you can just copy it over ```sudo cp tilehuriaflask.service /etc/systemd/system/```
 
@@ -143,36 +174,5 @@ sudo systemctl enable tilehuriaflask.service
 ```
 
 If you want to test that this worked, enter ```sudo systemctl status tilehuriaflask.service```
-
-## Install Nginx
-
-```
-sudo apt install nginx
-```
-
-## Configure Nginx to serve the app
-
-Enter the following into ```/etc/nginx/sites-available/tilehuriaflask``` (again, file provided, just ```sudo cp tilehuriaflask /etc/sites-available/```:
-
-
-```
-server {
-    listen 80;
-    server_name tilehuria.org www.tilehuria.org;
-
-    location / {
-        include uwsgi_params;
-        uwsgi_pass unix:/home/tilehuria/tilehuria-flask/tilehuriaflask.sock;
-    }
-}
-```
-
-and symlink it to the sites-enabled by typing```sudo ln -s /etc/nginx/sites-available/tilehuriaflask /etc/nginx/sites-enabled```
-
-# Secure the whole damned thing with LetsEncrypt
-```
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
-```
 
 It should work now.

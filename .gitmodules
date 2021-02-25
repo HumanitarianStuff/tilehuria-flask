@@ -1,0 +1,3 @@
+[submodule "app/tilehuria"]
+	path = app/tilehuria
+	url = https://github.com/HumanitarianStuff/tilehuria
