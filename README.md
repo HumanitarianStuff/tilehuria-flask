@@ -2,7 +2,7 @@
 
 Basic instructions for setting up a TileHuria server using Flask.
 
-A lot of this is fairly directly taken from the DigitalOcean community tutorial https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04.
+A lot of this is fairly directly taken from [the DigitalOcean community tutorial on Flask with uWSGI and Nginx on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-20-04).
 
 ## Create and set up a server
 
@@ -117,7 +117,7 @@ uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
 Again, try connecting to it from your browser, and when done testing control-C to stop it. 
 
 ## Create a service and start it up
-bung the following into ```/etc/systemd/system/tilehuriaflask.service``` (this file is actually provided in the repo, so you can just copy it over ```sudo cp tilehuriaflask.service /etc/systemd/system/```
+bung the following into ```/etc/systemd/system/tilehuriaflask.service``` (this file is actually provided in the repo, so you can just replace ```tilehuria.org``` with your domain name and copy it over ```sudo cp tilehuriaflask.service /etc/systemd/system/```
 
 ```
 [Unit]
