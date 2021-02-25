@@ -125,7 +125,7 @@ sudo apt install nginx
 
 ## Configure Nginx to serve the app
 
-Enter the following into ```/etc/nginx/sites-available/tilehuriaflask``` (again, file provided, just ```sudo cp tilehuriaflask /etc/sites-available/```:
+Enter the following into ```/etc/nginx/sites-available/tilehuriaflask``` (again, file provided, just replace ```tilehuria.org``` with your domain name and copy it over with ```sudo cp tilehuriaflask /etc/sites-available/```:
 
 
 ```
@@ -148,7 +148,7 @@ sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
 ```
 ## Create a service and start it up
-bung the following into ```/etc/systemd/system/tilehuriaflask.service``` (this file is actually provided in the repo, so you can just replace ```tilehuria.org``` with your domain name and copy it over ```sudo cp tilehuriaflask.service /etc/systemd/system/```
+bung the following into ```/etc/systemd/system/tilehuriaflask.service``` (this file is actually provided in the repo, so you can just copy it over ```sudo cp tilehuriaflask.service /etc/systemd/system/```
 
 ```
 [Unit]
