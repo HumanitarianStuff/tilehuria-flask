@@ -1,22 +1,16 @@
 #!/bin/bash -eu
 
 # Sets up a TileHuria server.
-# Tested on a $5/month Digital Ocean droplet with Ubuntu 18.04 installed.
-# Assumes a non-root sudo user.
+# Tested on a $5/month Digital Ocean droplet with Ubuntu 20.04
+# installed.
+
+# Assumes a non-root sudo user called tilehuria.
 
 echo please enter the domain name of your TileHuria server
 read domain_name
 echo
 echo Please enter an email address for certificate renewal information
 read email
-echo
-echo You can add the UbuntuGIS repositories to get the latest version of GDAL.
-echo WARNING: Do not do this on your local computer unless you know what you are doing.
-echo Changing the version of GDAL on your local machine can break stuff like QGIS.
-read -r -p "Add the UbuntuGIS repositories? [y/N] " response
-response=${response,,}    # tolower
-echo $response
-echo 
 echo
 echo Updating and upgrading the OS
 sudo apt -y update
