@@ -8,6 +8,8 @@ A lot of this is fairly directly taken from the DigitalOcean community tutorial 
 
 Create a cloud server (Ubuntu 20.04) and a sudo user. The usual setup from https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04. Log in.
 
+You'll need a domain name for the ssl encryption to work. Get one somewhere (I use Namecheap, though I don't have any reason to believe it's any better than any other, it's literally just the first registrar I got an account with). Instructions for setting that up [can be found here](https://www.digitalocean.com/docs/networking/dns/how-to/add-domains/).
+
 
 ### Install the Tilehuria-Flask directory
 
@@ -45,6 +47,8 @@ In the script directory, there is a setup script that, if everything is perfect,
 ```
 sudo script/setup.sh
 ```
+
+The script will ask you your domain name (you need one of those, as mentioned above) and your email (for messages from LetsEncrypt about your ssl certificates). Then it'll (maybe) set up the server for you automagically.
 
 # The Hard Way
 If that didn't work (shocker), here are the steps to install.
