@@ -2,7 +2,7 @@
 
 Basic instructions for setting up a TileHuria server using Flask.
 
-A lot of this is fairly directly taken from [the DigitalOcean community tutorial on Flask with uWSGI and Nginx on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-20-04).
+A lot of this is fairly directly taken from the DigitalOcean community tutorial https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04.
 
 ## Create and set up a server
 
@@ -16,12 +16,10 @@ git clone https://github.com/HumanitarianStuff/tilehuria-flask
 cd tilehuria-flask/
 ```
 
-#### Install the tilehuria code inside the app directory
+#### Persuade Git to pull down the code from the tilehuria utility
 
 ```
-cd app
-git clone https://github.com/HumanitarianStuff/tilehuria
-cd ../
+git submodule update
 ```
 
 #### Add URLs to the tileservers you wish to use in the URL_formats.txt file
@@ -39,6 +37,17 @@ anotherservername http://{switch:a,b,c,d}.tiles.atmyserver.org/{zoom}/{x}/{y}
 This is a flat text file with no formatting, headers, or anything. Note that on each line there is a name, a space, then a URL (the name will be used to populate the dropdown for each user's available tileservers). Each URL contains variables contained in {curly braces}; these are replaced for each individual tile with the appropriate values. TileHuria will work with almost any SlippyMap compliant tileserver, it's just a matter of getting the URL right.
 
 If you are doing work with humanitarian mapping and need help with this, get in touch with Ivan Gayton at the Humanitarian OpenStreetMap Team; if your cause is worthy and we're confident that you aren't going to abuse the trust of imagery providers we may be able to assist you.
+
+
+# The easy way
+In the script directory, there is a setup script that, if everything is perfect, will install the Tilehuria web app.
+
+```
+sudo script/setup.sh
+```
+
+# The Hard Way
+If that didn't work (shocker), here are the steps to install.
 
 ### Set up a virtualenv and the basic infrastructure of Flask
 
@@ -116,37 +125,6 @@ uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
 ```
 Again, try connecting to it from your browser, and when done testing control-C to stop it. 
 
-
-## Install Nginx
-
-```
-sudo apt install nginx
-```
-
-## Configure Nginx to serve the app
-
-Enter the following into ```/etc/nginx/sites-available/tilehuriaflask``` (again, file provided, just replace ```tilehuria.org``` with your domain name and copy it over with ```sudo cp tilehuriaflask /etc/sites-available/```:
-
-
-```
-server {
-    listen 80;
-    server_name tilehuria.org www.tilehuria.org;
-
-    location / {
-        include uwsgi_params;
-        uwsgi_pass unix:/home/tilehuria/tilehuria-flask/tilehuriaflask.sock;
-    }
-}
-```
-
-and symlink it to the sites-enabled by typing```sudo ln -s /etc/nginx/sites-available/tilehuriaflask /etc/nginx/sites-enabled```
-
-# Secure the whole damned thing with LetsEncrypt
-```
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
-```
 ## Create a service and start it up
 bung the following into ```/etc/systemd/system/tilehuriaflask.service``` (this file is actually provided in the repo, so you can just copy it over ```sudo cp tilehuriaflask.service /etc/systemd/system/```
 
@@ -174,5 +152,36 @@ sudo systemctl enable tilehuriaflask.service
 ```
 
 If you want to test that this worked, enter ```sudo systemctl status tilehuriaflask.service```
+
+## Install Nginx
+
+```
+sudo apt install nginx
+```
+
+## Configure Nginx to serve the app
+
+Enter the following into ```/etc/nginx/sites-available/tilehuriaflask``` (again, file provided, just ```sudo cp tilehuriaflask /etc/sites-available/```:
+
+
+```
+server {
+    listen 80;
+    server_name tilehuria.org www.tilehuria.org;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/tilehuria/tilehuria-flask/tilehuriaflask.sock;
+    }
+}
+```
+
+and symlink it to the sites-enabled by typing```sudo ln -s /etc/nginx/sites-available/tilehuriaflask /etc/nginx/sites-enabled```
+
+# Secure the whole damned thing with LetsEncrypt
+```
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d tilehuria.org -d www.tilehuria.org
+```
 
 It should work now.
