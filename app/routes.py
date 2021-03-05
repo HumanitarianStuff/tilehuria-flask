@@ -10,7 +10,7 @@ from app.tilehuria.tilehuria.polygon2mbtiles import polygon2mbtiles, drawn_featu
 from app.tilehuria.tilehuria.utils import get_url_name_list
 
 from . import db
-
+from urllib import parse
 
 def scandir(dir): 
     """Walk recursively through a directory and return a list of all files in it"""
@@ -43,11 +43,6 @@ def task(**opts):
     infile = opts['infile']
     polygon2mbtiles(infile, opts)
 
-def task_drawn(**opts):
-    """Launches a thread to create an MBTile set in a background process"""
-    coordinates = opts['coordinates']
-    drawn_feature2mbtiles(coordinates, opts)
-
 @app.route('/')
 @app.route('/index')
 def index():
@@ -70,15 +65,23 @@ def upload():
             extension = '.geojson'
             filename = opts['file_name'] + extension
             pathname = (os.path.join('files', filename))
-
+            raw_coordinates = parse.unquote(opts['map_input'])
+            coordinates = raw_coordinates.replace(
+                'featurecollection','FeatureCollection').replace(
+                'polygon', 'Polygon').replace(
+                'feature','Feature').replace(
+                'text/json;charset=utf-8,', '')
             print('\nThese are your opts: {}'.format(opts))
             # These are the same coordinates that get downloaded in JS
-            coordinates = opts['map_input']
             print('\nThese are your coordinates: {}, and opts: {}'.format(coordinates, opts))
-            # infile.save(pathname)
-            # opts['infile'] = pathname
+            with open(pathname, 'w') as gj:
+                gj.write(coordinates)
 
-            thread = threading.Thread(target = task_drawn, kwargs = opts)
+            # infile.save(pathname)
+            opts['infile'] = pathname
+            print(filename)
+
+            thread = threading.Thread(target = task, kwargs = opts)
 
         else:
             print('\nIt is a geojson')
