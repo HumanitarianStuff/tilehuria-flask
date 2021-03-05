@@ -104,7 +104,7 @@
         </div>
       
         <div>
-          <button class="btn btn-outline-info" type="submit" id="submit_button"><strong>Submit</strong></button>
+          <button class="btn btn-outline-info" type="submit"><strong>Submit</strong></button>
         </div>
       </div>
     </div>
@@ -179,69 +179,22 @@ map.on('drag', function() {
   // Initialise the draw control and pass it the FeatureGroup of editable layers
   var drawControl = new L.Control.Draw(drawPluginOptions);
   map.addControl(drawControl);
-
-  // fetch('/upload')
-  //   .then(function (text) {
-  //       console.log('The rectangle coordinates are: ');
-  //       console.log(rectangle_LatLngs)
-  //   });
  
  // Updating the coordinates when editing, creating or deleting a polygon and setting the new coordinates to the form
   update_latlongs = function(coordinates_geojson){
     var coordinates_geojson = editableLayers.toGeoJSON();
-    // var coordinates_stringify2 = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(coordinates_geojson));
-    // var coordinates_stringify3 = encodeURIComponent(JSON.stringify(coordinates_geojson));
-
-    // console.log('coordinates_stringify: ' + coordinates_stringify);
-    // console.log('coordinates_stringify2: ' + coordinates_stringify2);
-    // console.log('coordinates_stringify3: ' + coordinates_stringify3);
-
     var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(coordinates_geojson));
     // Create export
     document.getElementById('coordinates_link').setAttribute('href', 'data:' + convertedData);
     document.getElementById('coordinates_link').setAttribute('download','coordinates_geojson.geojson');
-    console.log('convertedData: ' + convertedData);
-
-
-    document.getElementById('coordinates').innerHTML = 'The coordinates of the rectangle: '+ convertedData
+    // Set the value of the coordinates to the form value:
     document.getElementById('coordinates').value = convertedData;
-    // console.log('rectangle_LatLngs: ' + rectangle_LatLngs);
-    // console.log('rectangle_LatLngs: ' + rectangle_LatLngs)
-    console.log('coordinates_geojson: ' + convertedData);
-
-    // console.log(JSON.stringify(coordinates_geojson, null, 2));
-
-    // fetch(`${window.origin}/index`, {
-    //   method: "POST",
-    //   body: JSON.stringify(rectangle_LatLngs)
-
-    // })
-
-    // fetch('/upload')
-    // .then(function (response) {
-    //     return response.text();
-    // }).then(function (text) {
-    //     console.log('GET response text:');
-    //     console.log(text); // Print the greeting as text
-    // });
   }
-
-
-  function downloadGeojson() {
-    // Create export
-    var convertedData = document.getElementById('coordinates').value
-    document.getElementById('coordinates_link').setAttribute('href', 'data:' + convertedData);
-    document.getElementById('coordinates_link').setAttribute('download','coordinates_geojson.geojson');
-  }
-  document.getElementById("submit_button").addEventListener("click", downloadGeojson);
-
 
   map.on('draw:created', function(e) {
     var type = e.layerType, 
     layer = e.layer;
-
     editableLayers.addLayer(layer);
-
     coordinates_geojson = editableLayers.toGeoJSON()
     update_latlongs(coordinates_geojson)
   });

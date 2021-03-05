@@ -6,7 +6,7 @@ import sys, os
 from app import app
 import threading
 
-from app.tilehuria.tilehuria.polygon2mbtiles import polygon2mbtiles, drawn_feature2mbtiles
+from app.tilehuria.tilehuria.polygon2mbtiles import polygon2mbtiles
 from app.tilehuria.tilehuria.utils import get_url_name_list
 
 from . import db
@@ -61,7 +61,6 @@ def upload():
         opts = cleanopts(choices)
         # Check if the selection is the map or file
         if opts['boundaries'] == 'map':
-            print('\nIt is a map')
             extension = '.geojson'
             filename = opts['file_name'] + extension
             pathname = (os.path.join('files', filename))
@@ -71,34 +70,22 @@ def upload():
                 'polygon', 'Polygon').replace(
                 'feature','Feature').replace(
                 'text/json;charset=utf-8,', '')
-            print('\nThese are your opts: {}'.format(opts))
             # These are the same coordinates that get downloaded in JS
-            print('\nThese are your coordinates: {}, and opts: {}'.format(coordinates, opts))
+            print('\nThese are your coordinates: {} \n These are your opts: {}'.format(coordinates, opts))
             with open(pathname, 'w') as gj:
                 gj.write(coordinates)
-
-            # infile.save(pathname)
             opts['infile'] = pathname
-            print(filename)
-
             thread = threading.Thread(target = task, kwargs = opts)
-
         else:
-            print('\nIt is a geojson')
             infile = request.files['polygon']
             filename = secure_filename(infile.filename)
             pathname = (os.path.join('files', filename))
             infile.save(pathname)
             opts['infile'] = pathname
             thread = threading.Thread(target = task, kwargs = opts)
-
-
-
-        print('\nOptions captured by the submission: {}\n'.format(opts))
-
+            print('\nOptions captured by the submission: {}\n'.format(opts))
         # Crude threading to launch Tilehuria instead of a proper task queue
         thread.start()
-        
         return render_template('upload.html', uploaded_file=filename)
     else:
         return render_template('index.html', title='No file. Try again!')
