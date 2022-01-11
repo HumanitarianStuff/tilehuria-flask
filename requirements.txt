@@ -6,7 +6,11 @@ itsdangerous==0.24
 Jinja2>=2.10.1
 MarkupSafe==1.0
 numpy==1.15.3
+<<<<<<< HEAD
 Pillow==8.3.2
+=======
+Pillow==8.1.2
+>>>>>>> e5375aae5f69762b26a0348e4c3c2eaf7d009925
 pkg-resources==0.0.0
 pygdal==2.2.1.3
 python-dotenv==0.9.1
